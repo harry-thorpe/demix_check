@@ -192,7 +192,7 @@ if mode_run:
                     out_data_tmp=pd.read_csv(out_tmp_f, sep="\t")
                     out_data_tmp["ref"]=ref
                     out_data_tmp["level"]=c
-                    out_data_tmp["out_d"]=out_d
+                    out_data_tmp["out_d"]=out_dr
                     out_data_tmp["ref_d"]=ref_d
 
                     out_data=out_data.append(out_data_tmp, ignore_index=True)
