@@ -80,11 +80,11 @@ There are 3 ways to run the pipeline.
 The setup mode sets up the reference set/s for use with the pipeline. A reference set consists of a set of assemblies with labels, as would normally be used with mSWEEP/mGEMS. For the demix_check pipeline, each reference set is stored in a separate folder, and the name of the folder defines the name of the reference set. This folder must contain a file named ref_info.tsv, which is a tab separated file with information about the isolate names, clusters, and the location of the reference assemblies. For example, a reference for Klebsiella pneumoniae may be stored as follows:
 
 ```
-Kpne
-Kpne/ref_info.tsv
+ref_dir/Kpne
+ref_dir/Kpne/ref_info.tsv
 ```
 
-where the contents of ```Kpne/ref_info.tsv``` have the header names [id, cluster, assembly]:
+where the contents of ```ref_dir/Kpne/ref_info.tsv``` have the header names [id, cluster, assembly]:
 ```
 id  cluster assembly
 isolate_1 SC1 path/to/isolate_1.fasta
@@ -92,7 +92,13 @@ isolate_2 SC1 path/to/isolate_2.fasta
 isolate_3 SC2 path/to/isolate_3.fasta
 ```
 
-The ```Kpne``` folder can then be given as input to demix_check in setup mode, which will do the following:
+The ```ref_dir/Kpne``` folder can then be given as input to demix_check in setup mode.
+
+Example command:
+
+```python demix_check/demix_check.py --mode_setup --ref ref_dir/Kpne```
+
+This will do the following:
 
 * Create a multifasta of the reference genomes
 * Index this multifasta for use with themisto
@@ -105,7 +111,13 @@ This reference set is then ready for use.
 
 ## check
 
-The check mode takes an existing mGEMS analysis, along with a reference set which has been set up with ```setup``` (this must be the same reference set as was used for the mGEMS analysis), and runs the checking part of the demix_check pipeline. This mode is useful if mGEMS has already been run. The folder containing the binned reads from mGEMS and the file containing the mSWEEP abundance estimations must both be specified as inputs, along with the reference set. The pipeline will then:
+The check mode takes an existing mGEMS analysis, along with a reference set which has been set up with ```setup``` (this must be the same reference set as was used for the mGEMS analysis), and runs the checking part of the demix_check pipeline. This mode is useful if mGEMS has already been run. The folder containing the binned reads from mGEMS and the file containing the mSWEEP abundance estimations must both be specified as inputs, along with the reference set.
+
+Example command:
+
+```python demix_check/demix_check.py --mode_check --binned_reads_dir mGEMS_analysis/binned_reads --msweep_abun mGEMS_analysis/msweep_abundances.txt --out_dir output_dir --ref ref_dir/Kpne```
+
+This will do the following:
 
 * Generate a mash sketch from each set of binned reads
 * Calculate mash distances between the binned reads and the reference genomes
@@ -115,6 +127,10 @@ The check mode takes an existing mGEMS analysis, along with a reference set whic
 ## run
 
 The run mode takes a set of mixed reads along with a reference set (which has been set up with ```setup```), and runs the mGEMS pipeline before then checking the results as described above. An output folder is specified, and then the results are placed in a folder which is specific to the reference set, so if the ```Kpne``` reference set is used, the results are placed in ```out_dir/Kpne```.
+
+Example command:
+
+```python demix_check/demix_check.py --mode_run --r1 reads_1.fastq.gz --r2 reads_2.fastq.gz --out_dir out_dir --ref ref_dir/Kpne```
 
 This mode can also be used to run mGEMS in a hierachical manner with several reference sets. This may be desirable, for example if we suspect that the mixed reads may contain multiple sequence clusters from several different species, we may first want to demix the reads into species bins, and then into sequence cluster bins from each species bin. To do this, we need one reference set which has clusters labelled by species, and then a separate reference set for each species that we want to separate into sequence clusters. These reference sets can be composed of the same isolates, but with different labels, for example:
 
@@ -142,4 +158,20 @@ ref_dir/Kpne/ref_info.tsv:
 id  cluster assembly
 isolate_3 SC1 path/to/isolate_3.fasta
 isolate_4 SC2 path/to/isolate_4.fasta
+```
 
+To tell the pipeline to run the hierachical manner, a file containing the paths to the reference folders must be given to ```--ref```. This file must be tab separated (no header), with each column corresponding to a different level:
+
+```
+ref_file.tsv:
+ref_dir/species_ref ref_dir/Ecoli
+ref_dir/species_ref ref_dir/Kpne
+```
+
+For this to work, each reference set in the second level must be present as a cluster label in the first set e.g. ```Ecoli``` must be a cluster label in ```species_ref```.
+
+Example command:
+
+```python demix_check/demix_check.py --mode_run --r1 reads_1.fastq.gz --r2 reads_2.fastq.gz --out_dir out_dir --ref ref_file.tsv```
+
+The pipeline will start by running the whole demix_check pipeline on each unique reference set in the first level, using the input fastq files as the mixed reads. It will then proceed to the second level, and for each reference set in that level, it will look for the binned reads for that cluster from the first level e.g. for ```Ecoli```, it will look for ```Ecoli_1.fastq.gz``` and ```Ecoli_2.fastq.gz``` in the mGEMS output from the first level. This continues until all levels have been completed.
