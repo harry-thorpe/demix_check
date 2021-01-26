@@ -28,7 +28,7 @@ def check_mGEMS(mash_exec, t, ss, m, min_abun, ref_d, out_d, binned_reads_d, msw
     abun_out="{}/msweep_abundances.tsv".format(out_d)
     abun_out_filt="{}/msweep_abundances_filt.tsv".format(out_d)
     
-    clu_pass_thr_out="{}/clu_pass_thr.tsv".format(out_d)
+    clu_score_out="{}/clu_score.tsv".format(out_d)
     
     abun_tmp=pd.read_csv(msweep_abun, sep="\t", comment="#", names=["cluster", "abundance"])
     abun_tmp.to_csv(abun_out, sep="\t", index=False)
@@ -38,8 +38,8 @@ def check_mGEMS(mash_exec, t, ss, m, min_abun, ref_d, out_d, binned_reads_d, msw
 
     clu=pd.read_csv(abun_out_filt, sep="\t")
     clu_count=len(clu)
-    clu_pass=clu
-    clu_pass["pass"]=True
+    clu_score=clu
+    clu_score["score"]=0
 
     for i in range(clu_count):
         cluster=clu["cluster"][i]
@@ -67,9 +67,20 @@ def check_mGEMS(mash_exec, t, ss, m, min_abun, ref_d, out_d, binned_reads_d, msw
 
         thr=pd.read_csv(ref_clu_thr, sep="\t")
         thr=thr[(thr.cluster == cluster)]
+        
+        # quick check that there is only one threshold line per cluster
+        if thr.shape[0] != 1:
+            sys.stderr.write('ERROR: threshold file is in the wrong format\n')
+            sys.exit(1)
+        
+        if min(dis["distance"]) < max(thr["dis_same_max"]):
+            clu_score['score']=np.where(clu_score['cluster'] == cluster, 1, clu_score['score'])
+        elif min(dis["distance"]) < max(thr["threshold"]):
+            clu_score['score']=np.where(clu_score['cluster'] == cluster, 2, clu_score['score'])
+        elif abs(np.median(dis["distance"]) - max(thr["dis_same_med_all"])) < abs(np.median(dis["distance"]) - max(thr["dis_diff_med_all"])):
+            clu_score['score']=np.where(clu_score['cluster'] == cluster, 3, clu_score['score'])
+        else:
+            clu_score['score']=np.where(clu_score['cluster'] == cluster, 4, clu_score['score'])
 
-        if min(dis["distance"]) > max(thr["threshold"]):
-            clu_pass['pass']=np.where(clu_pass['cluster'] == cluster, False, clu_pass['pass'])
-
-    clu_pass.to_csv(clu_pass_thr_out, sep="\t", index=False)
+    clu_score.to_csv(clu_score_out, sep="\t", index=False)
 

@@ -17,7 +17,7 @@ summary <- read_tsv(summary_f)
 
 summary_l0 <- summary %>%
   filter(level == 0) %>%
-  arrange(desc(pass), desc(abundance), cluster) %>%
+  arrange(desc(score), desc(abundance), cluster) %>%
   group_by(ref) %>%
   mutate(l0_idx=1:n()) %>%
   ungroup()
@@ -25,7 +25,7 @@ summary_l0 <- summary %>%
 summary_l1 <- summary %>%
   filter(level == 1) %>%
   left_join(., summary_l0 %>% select(cluster, l0_idx), by=c("ref"="cluster")) %>%
-  arrange(l0_idx, desc(pass), desc(abundance)) %>%
+  arrange(l0_idx, desc(score), desc(abundance)) %>%
   group_by(ref) %>%
   mutate(l1_idx=1:n()) %>%
   ungroup()
@@ -49,6 +49,7 @@ for(i in 1:nrow(summary_l01)){
   out_dr=summary_l01$out_d[i]
   ref=summary_l01$ref[i]
   clu=summary_l01$cluster[i]
+  score=summary_l01$score[i]
   abun=summary_l01$abundance[i]
   level=summary_l01$level[i]
   l0_idx=summary_l01$l0_idx[i]
@@ -106,8 +107,9 @@ for(i in 1:nrow(summary_l01)){
     scale_x_continuous(limits=c(0,max(c(dis_ref_query_r$distance_max_ref, dis_ref_query_r$distance_max_query), na.rm=TRUE))) +
     scale_y_continuous(limits=c(0,max(c(dis_ref_query_r$distance_max_ref, dis_ref_query_r$distance_max_query), na.rm=TRUE))) +
     scale_shape_manual(values=c("no"=1, "yes"=21)) +
-    theme(legend.position="none") +
-    labs(x="ref distance", y="query distance", title=paste(clu, " - ", as.integer(abun*100), "%", sep=""))
+    theme(legend.position="none",
+          plot.title=element_text(size=9)) +
+    labs(x="ref distance", y="query distance", title=paste(clu, "\nabundance - ", as.integer(abun*100), "%\nscore - ", score, sep=""))
   
   if(level == 0){
     pl_l0[[l0_idx]] <- p1
@@ -141,7 +143,7 @@ for(i in 1:n_l0){
   p_all <- p_all + draw_plot(plot_grid(plotlist=pl_l1[[i]], nrow=l1_rows, byrow=FALSE), l0_cols/w, 1-(i*l1_rows/h), l1_cols/w, l1_rows/h)
 }
 
-pdf(out_f, height=h*3*1.2, width=w*3)
+pdf(out_f, height=h*3*1.25, width=w*3)
 
 plot(p_all)
 

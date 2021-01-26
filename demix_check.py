@@ -32,12 +32,13 @@ parser=argparse.ArgumentParser(description="Pipeline for assessing the cluster a
 parser._optionals.title="Mode arguments"
 parser._optionals.description="Arguments to select the run mode"
 mode_group=parser.add_mutually_exclusive_group()
-mode_group.add_argument('--mode_setup', action="store_true", default=False, help='Set up one or more references')
-mode_group.add_argument('--mode_check', action="store_true", default=False, help='Check the results of an existing mGEMS analysis')
-mode_group.add_argument('--mode_run', action="store_true", default=False, help='Run mGEMS and then check the results')
+mode_group.add_argument('--mode_setup', action="store_true", default=False, help='set up one or more references')
+mode_group.add_argument('--mode_check', action="store_true", default=False, help='check the results of an existing mGEMS analysis')
+mode_group.add_argument('--mode_run', action="store_true", default=False, help='run mGEMS and then check the results')
 
 # args specific to setup mode
 setup_group=parser.add_argument_group('Setup arguments', 'Arguments for setup mode')
+setup_group.add_argument('--redo_thr', action="store_true", default=False, help='quickly recalculate thresholds only (based on --thr_prop_exp and/or --thr_prop_min). The reference set must have been previously set up before running with this option [default = off]')
 setup_group.add_argument('--thr_prop_exp', type=float, default=0.5, help='proportion of maximum divergence within a cluster to expand the threshold by [default = %(default)s]')
 setup_group.add_argument('--thr_prop_min', type=float, default=0.3, help='proportion of median divergence between clusters to set minimum threshold to [default = %(default)s]')
 
@@ -69,6 +70,7 @@ mode_setup=args.mode_setup
 mode_check=args.mode_check
 mode_run=args.mode_run
 
+redo_thr=args.redo_thr
 thr_prop_exp=args.thr_prop_exp
 thr_prop_min=args.thr_prop_min
 
@@ -122,7 +124,7 @@ if mode_setup:
     for ref_d in ref_ds:
         if os.path.isdir(ref_d) and os.path.isfile("{}/ref_info.tsv".format(ref_d)):
             
-            setup_reference(mash_exec, themisto_build_exec, ref_d, t, ss, thr_prop_min, thr_prop_exp)
+            setup_reference(mash_exec, themisto_build_exec, ref_d, t, ss, thr_prop_min, thr_prop_exp, redo_thr)
             
             if plots:
                 plot_cmd="Rscript {}/plot_reference.R {}".format(dir_path, ref_d)
@@ -179,7 +181,7 @@ if mode_run:
                 msweep_abun="{}/msweep_abundances.txt".format(out_dr)
                 
                 # run the mSWEEP/mGEMS pipeline
-                run_mGEMS(themisto_align_exec, mSWEEP_exec, mGEMS_exec, t, min_abun, rr1, rr2, ref_d, out_dr, binned_reads_d, msweep_abun)
+                #run_mGEMS(themisto_align_exec, mSWEEP_exec, mGEMS_exec, t, min_abun, rr1, rr2, ref_d, out_dr, binned_reads_d, msweep_abun)
 
                 # check the mGEMS bins
                 check_mGEMS(mash_exec, t, ss, m, min_abun, ref_d, out_dr, binned_reads_d, msweep_abun)
@@ -187,7 +189,7 @@ if mode_run:
                     plot_cmd="Rscript {}/plot_sample_single.R {} {}".format(dir_path, out_dr, ref_d)
                     subprocess.run(plot_cmd, shell=True, check=True)
                 
-                out_tmp_f="{}/clu_pass_thr.tsv".format(out_dr)
+                out_tmp_f="{}/clu_score.tsv".format(out_dr)
                 if os.path.isfile(out_tmp_f):
                     out_data_tmp=pd.read_csv(out_tmp_f, sep="\t")
                     out_data_tmp["ref"]=ref
