@@ -71,9 +71,9 @@ General arguments:
   -h, --help            show this help message and exit
 ```
 
-## modes
+## Modes
 
-There are 3 ways to run the pipeline.
+There are 3 ways to run the pipeline, which are specified with the ```--mode_setup```, ```--mode_check```, ```--mode_run``` options.
 
 ## setup
 
