@@ -39,7 +39,7 @@ Mode arguments:
 Setup arguments:
   Arguments for setup mode
   
-  --redo_thr            quickly recalculate thresholds only (based on --thr_prop_exp and/or --thr_prop_min). The reference set must have been previously set up before running with this option [default = off]
+  --redo_thr            quickly recalculate thresholds only (based on --thr_prop_exp and/or --thr_prop_min). The reference set/s must have been previously set up before running with this option [default = off]
   --thr_prop_exp THR_PROP_EXP
                         proportion of maximum divergence within a cluster to expand the threshold by [default = 0.5]
   --thr_prop_min THR_PROP_MIN
