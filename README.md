@@ -132,6 +132,13 @@ Example command:
 
 ```python demix_check/demix_check.py --mode_run --r1 reads_1.fastq.gz --r2 reads_2.fastq.gz --out_dir out_dir --ref ref_dir/Kpne```
 
+This will do the following:
+
+* Pseudoalign the reads against the reference set with themisto
+* Run the mSWEEP abundance estimation
+* Run mGEMS to bin the reads
+* Run the checking part of demix_check
+
 This mode can also be used to run mGEMS in a hierachical manner with several reference sets. This may be desirable, for example if we suspect that the mixed reads may contain multiple sequence clusters from several different species, we may first want to demix the reads into species bins, and then into sequence cluster bins from each species bin. To do this, we need one reference set which has clusters labelled by species, and then a separate reference set for each species that we want to separate into sequence clusters. These reference sets can be composed of the same isolates, but with different labels, for example:
 
 ```
