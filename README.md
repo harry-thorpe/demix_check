@@ -1,12 +1,12 @@
 # demix_check
 
-This pipeline checks the demixed binned reads from an mGEMS analysis. 
+This pipeline checks the demixed binned reads from an mGEMS analysis to determine whether they are from the assigned clusters or not. This is an important step when running mGEMS on complex mixtures, when there is possible contamination, or when the species being analysed doesn't have a comprehensive reference set. In these cases the assigned clusters may be the closest available sequences from the reference set, but the reads may actually be from an unknown cluster which is not present in the reference set. To address this, dexmix_check calculates the genetic distances between reference isolates, and these are used to build distributions of within and between cluster distances. Genetic distances are then calculated between the demixed binned reads and the reference sequences from the assigned cluster. The query-ref distances are then compared to the ref-ref distances to determine whether the binned reads are from the assigned cluster or not. Mash is used to calculate distances as has been shown to be very accurate and adds little computational burden.
 
 ## Dependencies
 
 * python3 with numpy and pandas
 * R with tidyverse and cowplot (for plotting)
-* build_index and pseudoalign
+* build_index and pseudoalign (from themisto)
 * mSWEEP
 * mGEMS
 
