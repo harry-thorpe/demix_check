@@ -32,13 +32,14 @@ Pipeline for assessing the cluster assignments from mGEMS
 Mode arguments:
   Arguments to select the run mode
 
-  --mode_setup          Set up one or more references
-  --mode_check          Check the results of an existing mGEMS analysis
-  --mode_run            Run mGEMS and then check the results
+  --mode_setup          set up one or more references
+  --mode_check          check the results of an existing mGEMS analysis
+  --mode_run            run mGEMS and then check the results
 
 Setup arguments:
   Arguments for setup mode
-
+  
+  --redo_thr            quickly recalculate thresholds only (based on --thr_prop_exp and/or --thr_prop_min). The reference set must have been previously set up before running with this option [default = off]
   --thr_prop_exp THR_PROP_EXP
                         proportion of maximum divergence within a cluster to expand the threshold by [default = 0.5]
   --thr_prop_min THR_PROP_MIN
