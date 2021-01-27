@@ -32,13 +32,14 @@ Pipeline for assessing the cluster assignments from mGEMS
 Mode arguments:
   Arguments to select the run mode
 
-  --mode_setup          Set up one or more references
-  --mode_check          Check the results of an existing mGEMS analysis
-  --mode_run            Run mGEMS and then check the results
+  --mode_setup          set up one or more references
+  --mode_check          check the results of an existing mGEMS analysis
+  --mode_run            run mGEMS and then check the results
 
 Setup arguments:
   Arguments for setup mode
-
+  
+  --redo_thr            quickly recalculate thresholds only (based on --thr_prop_exp and/or --thr_prop_min). The reference set/s must have been previously set up before running with this option [default = off]
   --thr_prop_exp THR_PROP_EXP
                         proportion of maximum divergence within a cluster to expand the threshold by [default = 0.5]
   --thr_prop_min THR_PROP_MIN
@@ -75,7 +76,7 @@ General arguments:
 
 There are 3 ways to run the pipeline, which are specified with the ```--mode_setup```, ```--mode_check```, ```--mode_run``` options.
 
-## setup
+### setup
 
 The setup mode sets up the reference set/s for use with the pipeline. A reference set consists of a set of assemblies with labels, as would normally be used with mSWEEP/mGEMS. For the demix_check pipeline, each reference set is stored in a separate folder, and the name of the folder defines the name of the reference set. This folder must contain a file named ref_info.tsv, which is a tab separated file with information about the isolate names, clusters, and the location of the reference assemblies. For example, a reference for Klebsiella pneumoniae may be stored as follows:
 
@@ -107,9 +108,9 @@ This will do the following:
 * Calculate appropriate thresholds for each cluster within the reference set
 * Plot the within and between cluster distances along with the thresholds
 
-This reference set is then ready for use.
+This reference set is then ready for use. If the thresholds aren't appropriate, they can be adjusted with the ```--thr_prop_exp``` and ```--thr_prop_min``` options, and specifying ```--redo_thr``` will quickly recalculate the thresholds without doing the rest of the reference set up (creating and indexing the fasta file etc).
 
-## check
+### check
 
 The check mode takes an existing mGEMS analysis, along with a reference set which has been set up with ```setup``` (this must be the same reference set as was used for the mGEMS analysis), and runs the checking part of the demix_check pipeline. This mode is useful if mGEMS has already been run. The folder containing the binned reads from mGEMS and the file containing the mSWEEP abundance estimations must both be specified as inputs, along with the reference set.
 
@@ -124,7 +125,7 @@ This will do the following:
 * Compare the query-ref mash distances to the thresholds (derived from the ref-ref comparisons) to decide whether the assignments are likely to be correct or not
 * plot the ref-ref distances against the query-ref distances
 
-## run
+### run
 
 The run mode takes a set of mixed reads along with a reference set (which has been set up with ```setup```), and runs the mGEMS pipeline before then checking the results as described above. An output folder is specified, and then the results are placed in a folder which is specific to the reference set, so if the ```Kpne``` reference set is used, the results are placed in ```out_dir/Kpne```.
 
@@ -182,3 +183,5 @@ Example command:
 ```python demix_check/demix_check.py --mode_run --r1 reads_1.fastq.gz --r2 reads_2.fastq.gz --out_dir out_dir --ref ref_file.tsv```
 
 The pipeline will start by running the whole demix_check pipeline on each unique reference set in the first level, using the input fastq files as the mixed reads. It will then proceed to the second level, and for each reference set in that level, it will look for the binned reads for that cluster from the first level e.g. for ```Ecoli```, it will look for ```Ecoli_1.fastq.gz``` and ```Ecoli_2.fastq.gz``` in the mGEMS output from the first level. This continues until all levels have been completed.
+
+## Output and interpretation
