@@ -9,23 +9,27 @@ import pandas as pd
 import numpy as np
 
 def run_mash_sketch(mash_exec, t, in_file, out_file, ss, m, in_type):
-    
+    std_result=""
+
     out_file_p=re.sub(r'.msh$', '', out_file)
     seq_id=os.path.basename(out_file_p)
 
     if in_type == "fa":
         mash_cmd="{} sketch -p {} -s {} -i -o {} {}".format(mash_exec, t, ss, out_file_p, in_file)
-        subprocess.run(mash_cmd, shell=True, check=True)
+        std_result=subprocess.run(mash_cmd, shell=True, check=True, capture_output=True, text=True)
     elif in_type == "fq":
         mash_cmd="{} sketch -p {} -s {} -r -m {} -I {} -C - -o {} {}".format(mash_exec, t, ss, m, seq_id, out_file_p, in_file)
-        subprocess.run(mash_cmd, shell=True, check=True)
+        std_result=subprocess.run(mash_cmd, shell=True, check=True, capture_output=True, text=True)
+    
+    return(std_result)
 
 def run_mash_dist(mash_exec, t, ref_file, query_file, out_file):
-    
+    std_result=""
+
     out_file_tmp="{}.tmp".format(out_file)
 
     mash_cmd="{} dist -p {} {} {} > {}".format(mash_exec, t, ref_file, query_file, out_file_tmp)
-    subprocess.run(mash_cmd, shell=True, check=True)
+    std_result=subprocess.run(mash_cmd, shell=True, check=True, capture_output=True, text=True)
 
     data=pd.read_csv(out_file_tmp, sep="\t", names=["ref_id", "met_id", "distance", "p", "hashes"])
     data[["hashes", "ss"]]=data.hashes.str.split('/', expand=True)
@@ -33,13 +37,16 @@ def run_mash_dist(mash_exec, t, ref_file, query_file, out_file):
     data.to_csv(out_file, sep="\t", index=False)
 
     os.remove(out_file_tmp)
+    
+    return(std_result)
 
 def run_mash_screen(mash_exec, t, ref_file, query_file, out_file, met_id):
-    
+    std_result=""
+
     out_file_tmp="{}.tmp".format(out_file)
 
     mash_cmd="{} screen -p {} {} {} > {}".format(mash_exec, t, ref_file, query_file, out_file_tmp)
-    subprocess.run(mash_cmd, shell=True, check=True)
+    std_result=subprocess.run(mash_cmd, shell=True, check=True, capture_output=True, text=True)
 
     data=pd.read_csv(out_file_tmp, sep="\t", names=["distance", "hashes", "coverage", "p", "ref_id", "TMP"])
     data[["hashes", "ss"]]=data.hashes.str.split('/', expand=True)
@@ -49,6 +56,8 @@ def run_mash_screen(mash_exec, t, ref_file, query_file, out_file, met_id):
     data.to_csv(out_file, sep="\t", index=False)
 
     os.remove(out_file_tmp)
+    
+    return(std_result)
 
 def add_clusters(in_clu, in_dis, out_file, ref=False, met=False):
     clu=pd.read_csv(in_clu, sep="\t")

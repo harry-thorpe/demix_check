@@ -11,6 +11,7 @@ import numpy as np
 from sketch import *
 
 def setup_reference(mash_exec, themisto_build_exec, d, t, ss, thr_prop_min, thr_prop_exp, redo_thr):
+    sys.stderr.write("Setting up reference set {}...\n".format(d))
 
     seq_info_f="{}/ref_info.tsv".format(d)
     seq_info=pd.read_csv(seq_info_f, sep="\t")
@@ -25,10 +26,14 @@ def setup_reference(mash_exec, themisto_build_exec, d, t, ss, thr_prop_min, thr_
     clu_out="{}/ref_clu.tsv".format(d)
 
     if redo_thr == True:
-
+        
+        sys.stderr.write("Calculating thresholds...\n")
         get_thresholds(clu_out, msh_dis_clu_out, thr_prop_min, thr_prop_exp, clu_thr_out)
     
     else:
+        log=open("{}/ref.log".format(d), 'w')
+        
+        sys.stderr.write("Creating multifasta...\n")
         fo=open(fa_out, 'w')
         for i in range(seq_count):
             seq_id=seq_info["id"][i]
@@ -48,10 +53,18 @@ def setup_reference(mash_exec, themisto_build_exec, d, t, ss, thr_prop_min, thr_
 
         clu=seq_info[["id", "cluster"]]
         clu.to_csv(clu_out, sep="\t", index=False)
+        
+        sys.stderr.write("Creating mash sketches...\n")
+        std_result=run_mash_sketch(mash_exec, t, fa_out, msh_out, ss, m=None, in_type="fa")
+        log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
+        
+        sys.stderr.write("Calculating mash distances...\n")
+        std_result=run_mash_dist(mash_exec, t, msh_out, msh_out, msh_dis_out)
+        log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
 
-        run_mash_sketch(mash_exec, t, fa_out, msh_out, ss, m=None, in_type="fa")
-        run_mash_dist(mash_exec, t, msh_out, msh_out, msh_dis_out)
         add_clusters(clu_out, msh_dis_out, msh_dis_clu_out, ref=True, met=True)
+        
+        sys.stderr.write("Calculating thresholds...\n")
         get_thresholds(clu_out, msh_dis_clu_out, thr_prop_min, thr_prop_exp, clu_thr_out)
     
         idx_d="{}/ref_idx".format(d)
@@ -62,9 +75,15 @@ def setup_reference(mash_exec, themisto_build_exec, d, t, ss, thr_prop_min, thr_
     
         if not os.path.isdir(idx_d_tmp):
             os.makedirs(idx_d_tmp)
-    
+        
+        sys.stderr.write("Indexing reference set...\n")
         themisto_cmd="{} --k 31 --n-threads {} --input-file {} --auto-colors --index-dir {} --temp-dir {}".format(themisto_build_exec, t, fa_out, idx_d, idx_d_tmp)
-        subprocess.run(themisto_cmd, shell=True, check=True)
+        #std_result=subprocess.run(themisto_cmd, shell=True, check=True, capture_output=True, text=True)
+        log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
+        
+        sys.stderr.write("Reference set {} setup completed\n".format(d))
+
+        log.close()
 
 def get_thresholds(in_clu, in_dis, thr_prop_min, thr_prop_exp, out_file):
     

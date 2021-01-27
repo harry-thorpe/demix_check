@@ -90,6 +90,7 @@ plots=args.plots
 ########################################
 
 # collect reference information ########
+sys.stderr.write("Finding reference set/s...\n")
 if ref_in:
     if os.path.isfile(ref_in):
         ref_str=pd.read_csv(ref_in, sep="\t", header=None)
@@ -104,6 +105,7 @@ if ref_in:
 
     ref_str_long=ref_str.melt(value_name="value")
     ref_ds=list(set(ref_str_long.value.values))
+    ref_ds_count=len(ref_ds)
     for tmp_ref_d in ref_ds:
         if not os.path.isdir(tmp_ref_d):
             sys.stderr.write("ERROR: can't find reference {}\n".format(tmp_ref_d))
@@ -114,44 +116,53 @@ if ref_in:
         for r in range(0, ref_str_r):
             ref_str_d[ref_str[c][r]]=ref_str[(c-1)][r]
 
-    print(ref_str_d)
+    sys.stderr.write("Found {} reference set/s:\n{}\n".format(ref_ds_count, ref_ds))
 ########################################
 
 
 # run setup mode #######################
 if mode_setup:
     
+    sys.stderr.write("Running in setup mode...\n")
     for ref_d in ref_ds:
         if os.path.isdir(ref_d) and os.path.isfile("{}/ref_info.tsv".format(ref_d)):
             
             setup_reference(mash_exec, themisto_build_exec, ref_d, t, ss, thr_prop_min, thr_prop_exp, redo_thr)
             
             if plots:
+                sys.stderr.write("Plotting output...\n")
                 plot_cmd="Rscript {}/plot_reference.R {}".format(dir_path, ref_d)
-                subprocess.run(plot_cmd, shell=True, check=True)
+                subprocess.run(plot_cmd, shell=True, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+    sys.stderr.write("Setup mode completed\n")
 ########################################
 
 
 # run check mode #######################
 if mode_check:
     
+    sys.stderr.write("Running in check mode...\n")
     ref_d=ref_ds[0]
     check_mGEMS(mash_exec, t, ss, m, min_abun, ref_d, out_d, binned_reads_d, msweep_abun)
 
     if plots:
+        sys.stderr.write("Plotting output...\n")
         plot_cmd="Rscript {}/plot_sample_single.R {} {}".format(dir_path, out_d, ref_d)
-        subprocess.run(plot_cmd, shell=True, check=True)
+        subprocess.run(plot_cmd, shell=True, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+    sys.stderr.write("Check mode completed\n")
 ########################################
 
 
 # run run mode #########################
 if mode_run:
     
+    sys.stderr.write("Running in run mode...\n")
     if not os.path.isdir(out_d):
         os.makedirs(out_d)
 
     out_f="{}/cluster_out_summary.tsv".format(out_d)
-    out_data=pd.DataFrame(columns=["cluster", "abundance", "pass"])
+    out_data=pd.DataFrame(columns=["cluster", "abundance", "score"])
     
     # loop through reference directories
     for c in range(ref_str_c):
@@ -172,8 +183,6 @@ if mode_run:
                 rr1="{}/{}/binned_reads/{}_1.fastq.gz".format(out_d, ref_p, ref)
                 rr2="{}/{}/binned_reads/{}_2.fastq.gz".format(out_d, ref_p, ref)
 
-            print(ref, rr1, rr2)
-
             if os.path.isdir(ref_d) and os.path.isfile(rr1) and os.path.isfile(rr2):
                 
                 out_dr="{}/{}".format(out_d, ref)
@@ -181,13 +190,14 @@ if mode_run:
                 msweep_abun="{}/msweep_abundances.txt".format(out_dr)
                 
                 # run the mSWEEP/mGEMS pipeline
-                #run_mGEMS(themisto_align_exec, mSWEEP_exec, mGEMS_exec, t, min_abun, rr1, rr2, ref_d, out_dr, binned_reads_d, msweep_abun)
+                run_mGEMS(themisto_align_exec, mSWEEP_exec, mGEMS_exec, t, min_abun, rr1, rr2, ref_d, out_dr, binned_reads_d, msweep_abun)
 
                 # check the mGEMS bins
                 check_mGEMS(mash_exec, t, ss, m, min_abun, ref_d, out_dr, binned_reads_d, msweep_abun)
                 if plots:
+                    sys.stderr.write("Plotting output...\n")
                     plot_cmd="Rscript {}/plot_sample_single.R {} {}".format(dir_path, out_dr, ref_d)
-                    subprocess.run(plot_cmd, shell=True, check=True)
+                    subprocess.run(plot_cmd, shell=True, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                 
                 out_tmp_f="{}/clu_score.tsv".format(out_dr)
                 if os.path.isfile(out_tmp_f):
@@ -202,7 +212,10 @@ if mode_run:
     out_data.to_csv(out_f, sep="\t", index=False)
     
     if plots and ref_str_c > 1:
+        sys.stderr.write("Plotting output...\n")
         plot_cmd="Rscript {}/plot_sample_multi.R {}".format(dir_path, out_d)
-        subprocess.run(plot_cmd, shell=True, check=True)
+        subprocess.run(plot_cmd, shell=True, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+    sys.stderr.write("Run mode completed\n")
 ########################################
 
