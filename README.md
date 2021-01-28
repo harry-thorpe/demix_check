@@ -86,6 +86,7 @@ ref_dir/Kpne/ref_info.tsv
 ```
 
 where the contents of ```ref_dir/Kpne/ref_info.tsv``` have the header names [id, cluster, assembly]:
+
 ```
 id  cluster assembly
 isolate_1 SC1 path/to/isolate_1.fasta
@@ -122,7 +123,7 @@ This will do the following:
 
 * Generate a mash sketch from each set of binned reads
 * Calculate mash distances between the binned reads and the reference genomes
-* Compare the query-ref mash distances to the thresholds (derived from the ref-ref comparisons) to decide whether the assignments are likely to be correct or not
+* Compare the query-ref distances to the ref-ref distances and thresholds (derived from the ref-ref comparisons) to calculate a score for each cluster
 * plot the ref-ref distances against the query-ref distances
 
 ### run
@@ -186,10 +187,15 @@ The pipeline will start by running the whole demix_check pipeline on each unique
 
 ## Output and interpretation
 
-A score is calculated for each cluster based on comparisons of the genetic distances between demixed binned reads (query) and known reference sequences (ref):
+A score is calculated (1 - highest confidence, 4 - lowest confidence) for each cluster based on comparisons of the genetic distances between demixed binned reads (query) and known reference sequences (ref):
 
 1. There is overlap between the query-ref distances and the ref-ref distances from the same cluster.
 2. The query-ref distances are greater than the ref-ref distances from the same cluster, but are within the threshold.
 3. The query-ref distances are greater than the threshold, but are closer to the median within-cluster distance than the median between-cluster distance.
 4. The query-ref distances are greater than the threshold, and are closer to the median between-cluster distance than the median within-cluster distance.
 
+The ref-ref distances are also plotted against the query-ref distances, along with the thresholds.
+
+For each checking analysis the scores are saved in ```clu_score.tsv```, and the plots in ```sample_plot.pdf```.
+
+If the pipeline has been run in a hierarchical manner, there are two additional output files, ```clu_out_summary.tsv``` and ```summary_plot.pdf```.
