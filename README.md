@@ -186,10 +186,10 @@ The pipeline will start by running the whole demix_check pipeline on each unique
 
 ## Output and interpretation
 
-A score is calculated for each cluster based on comparisons of the genetic distances between binned reads and known reference sequences:
+A score is calculated for each cluster based on comparisons of the genetic distances between demixed binned reads (query) and known reference sequences (ref):
 
-1. The genetic distances between the binned reads and the known reference sequences from the assigned cluster are within the observed distances from that cluster.
-2. The genetic distances between the binned reads and the known reference sequences from the assigned cluster are outside the observed distances from that cluster, but within the threshold.
-3. The genetic distances between the binned reads and the known reference sequences from the assigned cluster are outside the threshold, but are closer to the median within-cluster distance than the median between-cluster distance.
-4. The genetic distances between the binned reads and the known reference sequences from the assigned cluster are outside the threshold, and are closer to the median between-cluster distance than the median within-cluster distance.
+1. There is overlap between the query-ref distances and the ref-ref distances from the same cluster.
+2. The query-ref distances are greater than the ref-ref distances from the same cluster, but are within the threshold.
+3. The query-ref distances are greater than the threshold, but are closer to the median within-cluster distance than the median between-cluster distance.
+4. The query-ref distances are greater than the threshold, and are closer to the median between-cluster distance than the median within-cluster distance.
 
