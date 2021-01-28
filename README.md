@@ -168,7 +168,7 @@ isolate_3 SC1 path/to/isolate_3.fasta
 isolate_4 SC2 path/to/isolate_4.fasta
 ```
 
-To tell the pipeline to run the hierachical manner, a file containing the paths to the reference folders must be given to ```--ref```. This file must be tab separated (no header), with each column corresponding to a different level:
+To tell the pipeline to run in a hierachical manner, a file containing the paths to the reference folders must be given to ```--ref```. This file must be tab separated (no header), with each column corresponding to a different level:
 
 ```
 ref_file.tsv:
@@ -185,3 +185,11 @@ Example command:
 The pipeline will start by running the whole demix_check pipeline on each unique reference set in the first level, using the input fastq files as the mixed reads. It will then proceed to the second level, and for each reference set in that level, it will look for the binned reads for that cluster from the first level e.g. for ```Ecoli```, it will look for ```Ecoli_1.fastq.gz``` and ```Ecoli_2.fastq.gz``` in the mGEMS output from the first level. This continues until all levels have been completed.
 
 ## Output and interpretation
+
+A score is calculated for each cluster based on comparisons of the genetic distances between binned reads and known reference sequences:
+
+1. The genetic distances between the binned reads and the known reference sequences from the assigned cluster are within the observed distances from that cluster.
+2. The genetic distances between the binned reads and the known reference sequences from the assigned cluster are outside the observed distances from that cluster, but within the threshold.
+3. The genetic distances between the binned reads and the known reference sequences from the assigned cluster are outside the threshold, but are closer to the median within-cluster distance than the median between-cluster distance.
+4. The genetic distances between the binned reads and the known reference sequences from the assigned cluster are outside the threshold, and are closer to the median between-cluster distance than the median within-cluster distance.
+
