@@ -33,13 +33,13 @@ def run_mGEMS(themisto_align_exec, mSWEEP_exec, mGEMS_exec, t, min_abun, r1, r2,
     
     sys.stderr.write("Pseudoaligning r1 reads with themisto...\n")
     themisto_cmd="{} --index-dir {} --query-file {} --outfile {} --rc --temp-dir {}/tmp --n-threads {} --sort-output --gzip-output".format(themisto_align_exec, ref_idx, r1, r_ali1_p, ref_idx, t)
-    #std_result=subprocess.run(themisto_cmd, shell=True, check=True, capture_output=True, text=True)
-    #log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
+    std_result=subprocess.run(themisto_cmd, shell=True, check=True, capture_output=True, text=True)
+    log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
     
     sys.stderr.write("Pseudoaligning r2 reads with themisto...\n")
     themisto_cmd="{} --index-dir {} --query-file {} --outfile {} --rc --temp-dir {}/tmp --n-threads {} --sort-output --gzip-output".format(themisto_align_exec, ref_idx, r2, r_ali2_p, ref_idx, t)
-    #std_result=subprocess.run(themisto_cmd, shell=True, check=True, capture_output=True, text=True)
-    #log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
+    std_result=subprocess.run(themisto_cmd, shell=True, check=True, capture_output=True, text=True)
+    log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
     
     sys.stderr.write("Estimating abundances with mSWEEP...\n")
     mSWEEP_cmd="{} -t 1 --themisto-1 {} --themisto-2 {} -o {} -i {} --write-probs".format(mSWEEP_exec, r_ali1, r_ali2, msweep_abun_p, ref_clu)

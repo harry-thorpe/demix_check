@@ -11,7 +11,7 @@ out_d=args[1]
 
 out_f <- paste(out_d, "/summary_plot.pdf", sep="")
 
-summary_f=paste(out_d, "/cluster_out_summary.tsv", sep="")
+summary_f=paste(out_d, "/clu_out_summary.tsv", sep="")
 
 summary <- read_tsv(summary_f)
 

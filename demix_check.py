@@ -161,7 +161,7 @@ if mode_run:
     if not os.path.isdir(out_d):
         os.makedirs(out_d)
 
-    out_f="{}/cluster_out_summary.tsv".format(out_d)
+    out_f="{}/clu_out_summary.tsv".format(out_d)
     out_data=pd.DataFrame(columns=["cluster", "abundance", "score"])
     
     # loop through reference directories
