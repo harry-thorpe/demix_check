@@ -39,8 +39,8 @@ mode_group.add_argument('--mode_run', action="store_true", default=False, help='
 # args specific to setup mode
 setup_group=parser.add_argument_group('Setup arguments', 'Arguments for setup mode')
 setup_group.add_argument('--redo_thr', action="store_true", default=False, help='quickly recalculate thresholds only (based on --thr_prop_exp and/or --thr_prop_min). The reference set must have been previously set up before running with this option [default = off]')
-setup_group.add_argument('--thr_prop_exp', type=float, default=0.5, help='proportion of maximum divergence within a cluster to expand the threshold by [default = %(default)s]')
-setup_group.add_argument('--thr_prop_min', type=float, default=0.3, help='proportion of median divergence between clusters to set minimum threshold to [default = %(default)s]')
+setup_group.add_argument('--thr_prop_exp', type=float, default=0.2, help='proportion of maximum divergence within a cluster to expand the threshold by [default = %(default)s]')
+setup_group.add_argument('--thr_prop_min', type=float, default=0.2, help='proportion of median divergence between clusters to set minimum threshold to [default = %(default)s]')
 
 # args specific to check mode
 check_group=parser.add_argument_group('Check arguments', 'Arguments for check mode')
@@ -87,6 +87,15 @@ m=args.kmer_min_freq
 ss=args.sketch_size
 t=args.threads
 plots=args.plots
+
+# trim trailing slashes
+if binned_reads_d:
+    binned_reads_d=binned_reads_d.rstrip('/')
+if ref_in:
+    ref_in=ref_in.rstrip('/')
+if out_d:
+    out_d=out_d.rstrip('/')
+
 ########################################
 
 # collect reference information ########

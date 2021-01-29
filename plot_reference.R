@@ -34,7 +34,7 @@ plot_ref <- ggplot(dis_ref_r, aes(x=ref_cluster, y=distance_med, ymin=distance_m
   theme(legend.position="none",
         strip.text=element_blank(),
         axis.text.x=element_text(angle=45, hjust=1)) +
-  labs(x="Reference cluster", y="Distance", title=ref)
+  labs(x="cluster", y="distance", title=ref)
 
 pdf(out_f, height=10, width=20)
 

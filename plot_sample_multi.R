@@ -17,7 +17,7 @@ summary <- read_tsv(summary_f)
 
 summary_l0 <- summary %>%
   filter(level == 0) %>%
-  arrange(desc(score), desc(abundance), cluster) %>%
+  arrange(score, desc(abundance), cluster) %>%
   group_by(ref) %>%
   mutate(l0_idx=1:n()) %>%
   ungroup()
@@ -25,7 +25,7 @@ summary_l0 <- summary %>%
 summary_l1 <- summary %>%
   filter(level == 1) %>%
   left_join(., summary_l0 %>% select(cluster, l0_idx), by=c("ref"="cluster")) %>%
-  arrange(l0_idx, desc(score), desc(abundance)) %>%
+  arrange(l0_idx, score, desc(abundance)) %>%
   group_by(ref) %>%
   mutate(l1_idx=1:n()) %>%
   ungroup()
@@ -109,7 +109,7 @@ for(i in 1:nrow(summary_l01)){
     scale_shape_manual(values=c("no"=1, "yes"=21)) +
     theme(legend.position="none",
           plot.title=element_text(size=9)) +
-    labs(x="ref distance", y="query distance", title=paste(clu, "\nabundance - ", as.integer(abun*100), "%\nscore - ", score, sep=""))
+    labs(x="ref-ref distance", y="query-ref distance", title=paste(clu, "\nabundance - ", as.integer(abun*100), "%\nscore - ", score, sep=""))
   
   if(level == 0){
     pl_l0[[l0_idx]] <- p1

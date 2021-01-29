@@ -78,7 +78,7 @@ def setup_reference(mash_exec, themisto_build_exec, d, t, ss, thr_prop_min, thr_
         
         sys.stderr.write("Indexing reference set...\n")
         themisto_cmd="{} --k 31 --n-threads {} --input-file {} --auto-colors --index-dir {} --temp-dir {}".format(themisto_build_exec, t, fa_out, idx_d, idx_d_tmp)
-        #std_result=subprocess.run(themisto_cmd, shell=True, check=True, capture_output=True, text=True)
+        std_result=subprocess.run(themisto_cmd, shell=True, check=True, capture_output=True, text=True)
         log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
         
         sys.stderr.write("Reference set {} setup completed\n".format(d))

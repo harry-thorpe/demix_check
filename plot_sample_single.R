@@ -15,7 +15,7 @@ out_f <- paste(out_d, "/sample_plot.pdf", sep="")
 summary_f=paste(out_d, "/clu_score.tsv", sep="")
 
 summary <- read_tsv(summary_f) %>%
-  arrange(desc(score), desc(abundance), cluster) %>%
+  arrange(score, desc(abundance), cluster) %>%
   mutate(idx=1:n())
 
 n <- max(summary$idx)
@@ -81,7 +81,7 @@ for(i in 1:nrow(summary)){
     scale_shape_manual(values=c("no"=1, "yes"=21)) +
     theme(legend.position="none",
           plot.title=element_text(size=9)) +
-    labs(x="ref distance", y="query distance", title=paste(clu, "\nabundance - ", as.integer(abun*100), "%\nscore - ", score, sep=""))
+    labs(x="ref-ref distance", y="query-ref distance", title=paste(clu, "\nabundance - ", as.integer(abun*100), "%\nscore - ", score, sep=""))
   
   pl[[idx]] <- p1
 
