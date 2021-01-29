@@ -1,6 +1,6 @@
 # demix_check
 
-This pipeline checks the demixed binned reads from an mGEMS analysis to determine whether they are from the assigned clusters or not. This is an important step when running mGEMS on complex mixtures, when there is possible contamination, or when the species being analysed doesn't have a comprehensive reference set. In these cases the assigned clusters may be the closest available sequences from the reference set, but the reads may actually be from an unknown cluster which is not present in the reference set. To address this, demix_check calculates the genetic distances between reference isolates, and these are used to build distributions of within and between cluster distances. Genetic distances are then calculated between the demixed binned reads and the reference isolates. The query-ref distances are then compared to the ref-ref distances to determine whether the binned reads are from the assigned cluster or not. Mash is used to calculate distances as it has been shown to be very accurate and adds little computational burden to the whole pipeline.
+This pipeline assess the demixed binned reads from an mGEMS analysis to help with interpreting the assigned clusters. This is an important step when running mGEMS on complex mixtures, when there is possible contamination, or when the species being analysed doesn't have a comprehensive reference set. In these cases the assigned clusters may be the closest available sequences from the reference set, but the reads may actually be from an unknown cluster which is not present in the reference set. To address this, demix_check calculates the genetic distances between reference isolates, and these are used to build distributions of within and between cluster distances. Genetic distances are then calculated between the demixed binned reads and the reference isolates. The query-ref distances are then compared to the ref-ref distances to determine whether the binned reads are from the assigned cluster or not. Mash is used to calculate distances as it has been shown to be very accurate and adds little computational burden to the whole pipeline.
 
 ## Dependencies
 
@@ -9,6 +9,7 @@ This pipeline checks the demixed binned reads from an mGEMS analysis to determin
 * build_index and pseudoalign (from themisto)
 * mSWEEP
 * mGEMS
+* mash
 
 ## Running the pipeline
 
@@ -41,9 +42,9 @@ Setup arguments:
   
   --redo_thr            quickly recalculate thresholds only (based on --thr_prop_exp and/or --thr_prop_min). The reference set/s must have been previously set up before running with this option [default = off]
   --thr_prop_exp THR_PROP_EXP
-                        proportion of maximum divergence within a cluster to expand the threshold by [default = 0.5]
+                        proportion of maximum divergence within a cluster to expand the threshold by [default = 0.2]
   --thr_prop_min THR_PROP_MIN
-                        proportion of median divergence between clusters to set minimum threshold to [default = 0.3]
+                        proportion of median divergence between clusters to set minimum threshold to [default = 0.2]
 
 Check arguments:
   Arguments for check mode
@@ -74,18 +75,18 @@ General arguments:
 
 ## Modes
 
-There are 3 ways to run the pipeline, which are specified with the ```--mode_setup```, ```--mode_check```, ```--mode_run``` options.
+There are 3 ways to run the pipeline - these are specified with the ```--mode_setup```, ```--mode_check```, ```--mode_run``` options.
 
 ### setup
 
-The setup mode sets up the reference set/s for use with the pipeline. A reference set consists of a set of assemblies with labels, as would normally be used with mSWEEP/mGEMS. For the demix_check pipeline, each reference set is stored in a separate folder, and the name of the folder defines the name of the reference set. This folder must contain a file named ref_info.tsv, which is a tab separated file with information about the isolate names, clusters, and the location of the reference assemblies. For example, a reference for Klebsiella pneumoniae may be stored as follows:
+The setup mode sets up the reference set/s for use with the pipeline. A reference set consists of a set of assemblies with labels, as would normally be used with mSWEEP/mGEMS. For the demix_check pipeline, each reference set is stored in a separate folder, and the name of the folder defines the name of the reference set. This folder must contain a file named ref_info.tsv, which is a tab separated file with information about the isolate names, clusters, and the location of the reference assemblies. For example, a reference set for Klebsiella pneumoniae may be stored as follows:
 
 ```
 ref_dir/Kpne
 ref_dir/Kpne/ref_info.tsv
 ```
 
-where the contents of ```ref_dir/Kpne/ref_info.tsv``` have the header names [id, cluster, assembly]:
+where the contents of ```ref_dir/Kpne/ref_info.tsv``` has the header names [id, cluster, assembly]:
 
 ```
 id  cluster assembly
@@ -128,7 +129,7 @@ This will do the following:
 
 ### run
 
-The run mode takes a set of mixed reads along with a reference set (which has been set up with ```setup```), and runs the mGEMS pipeline before then checking the results as described above. An output folder is specified, and then the results are placed in a folder which is specific to the reference set, so if the ```Kpne``` reference set is used, the results are placed in ```out_dir/Kpne```.
+The run mode takes a set of mixed reads along with a reference set (which has been set up with ```setup```), and runs the whole mSWEEP/mGEMS pipeline before then checking the results as described above. An output folder is specified, and then the results are placed in a folder which is specific to the reference set, so if the ```Kpne``` reference set is used, the results are placed in ```out_dir/Kpne```.
 
 Example command:
 
@@ -198,4 +199,4 @@ The ref-ref distances are also plotted against the query-ref distances, along wi
 
 For each checking analysis the scores are saved in ```clu_score.tsv```, and the plots in ```sample_plot.pdf```.
 
-If the pipeline has been run in a hierarchical manner, there are two additional output files, ```clu_out_summary.tsv``` and ```summary_plot.pdf```.
+If the pipeline has been run in a hierarchical manner, there are two additional output files, ```clu_out_summary.tsv``` and ```summary_plot.pdf```, which show the results for the first two levels in the hierarchy.
