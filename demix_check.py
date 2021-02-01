@@ -32,7 +32,7 @@ parser=argparse.ArgumentParser(description="Pipeline for assessing the cluster a
 parser._optionals.title="Mode arguments"
 parser._optionals.description="Arguments to select the run mode"
 mode_group=parser.add_mutually_exclusive_group()
-mode_group.add_argument('--mode_setup', action="store_true", default=False, help='set up one or more references')
+mode_group.add_argument('--mode_setup', action="store_true", default=False, help='set up one or more reference set/s')
 mode_group.add_argument('--mode_check', action="store_true", default=False, help='check the results of an existing mGEMS analysis')
 mode_group.add_argument('--mode_run', action="store_true", default=False, help='run mGEMS and then check the results')
 
@@ -55,7 +55,7 @@ run_group.add_argument('--r2', type=str, required='--mode_run' in sys.argv, help
 # general args
 general_group=parser.add_argument_group('General arguments')
 general_group.add_argument('--out_dir', type=str, required='--mode_check' in sys.argv or '--mode_run' in sys.argv, help='output directory')
-general_group.add_argument('--ref', type=str, required='--mode_setup' in sys.argv or '--mode_check' in sys.argv or '--mode_run' in sys.argv, help='reference/s to use [either a string specifying the path to the reference directory or file containing paths to the reference directories]')
+general_group.add_argument('--ref', type=str, required='--mode_setup' in sys.argv or '--mode_check' in sys.argv or '--mode_run' in sys.argv, help='reference set/s to use [either a string specifying the path to the reference directory or a file containing paths to the reference directories]')
 general_group.add_argument('--min_abun', type=float, default=0.01, help='mSWEEP/mGEMS - only accept clusters with this abundance or greater [default = %(default)s]')
 general_group.add_argument('--kmer_min_freq', type=float, default=3, help='mash - only use kmers with this frequency or greater [default = %(default)d]')
 general_group.add_argument('--sketch_size', type=float, default=10000, help='mash - sketch size to use [default = %(default)d]')
