@@ -33,7 +33,7 @@ Pipeline for assessing the cluster assignments from mGEMS
 Mode arguments:
   Arguments to select the run mode
 
-  --mode_setup          set up one or more references
+  --mode_setup          set up one or more reference set/s
   --mode_check          check the results of an existing mGEMS analysis
   --mode_run            run mGEMS and then check the results
 
@@ -62,7 +62,7 @@ Run arguments:
 
 General arguments:
   --out_dir OUT_DIR     output directory
-  --ref REF             reference/s to use [either a string specifying the path to the reference directory or file containing paths to the reference directories]
+  --ref REF             reference set/s to use [either a string specifying the path to the reference directory or a file containing paths to the reference directories]
   --min_abun MIN_ABUN   mSWEEP/mGEMS - only accept clusters with this abundance or greater [default = 0.01]
   --kmer_min_freq KMER_MIN_FREQ
                         mash - only use kmers with this frequency or greater [default = 3]
