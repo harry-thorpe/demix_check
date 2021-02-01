@@ -95,8 +95,8 @@ if ref_in:
     ref_in=ref_in.rstrip('/')
 if out_d:
     out_d=out_d.rstrip('/')
-
 ########################################
+
 
 # collect reference information ########
 sys.stderr.write("Finding reference set/s...\n")
