@@ -114,7 +114,7 @@ This reference set is then ready for use. If the thresholds aren't appropriate, 
 
 ### check
 
-The check mode takes an existing mGEMS analysis, along with a reference set which has been set up with ```setup``` (this must be the same reference set as was used for the mGEMS analysis), and runs the checking part of the demix_check pipeline. This mode is useful if mGEMS has already been run. The folder containing the binned reads from mGEMS and the file containing the mSWEEP abundance estimations must both be specified as inputs, along with the reference set.
+The check mode takes an existing mGEMS analysis, along with a reference set which has been set up with ```setup``` (this must be the same reference set as was used for the mGEMS analysis), and runs the checking part of the demix_check pipeline. This mode is useful if mGEMS has already been run. The folder containing the binned reads from mGEMS and the file containing the mSWEEP abundance estimates must both be specified as inputs, along with the reference set.
 
 Example command:
 
@@ -137,7 +137,7 @@ Example command:
 
 This will do the following:
 
-* Pseudoalign the reads against the reference set with themisto
+* Pseudoalign the reads to the reference set with themisto
 * Run the mSWEEP abundance estimation
 * Run mGEMS to bin the reads
 * Run the checking part of demix_check
@@ -178,7 +178,7 @@ ref_dir/species_ref ref_dir/Ecoli
 ref_dir/species_ref ref_dir/Kpne
 ```
 
-For this to work, each reference set in the second level must be present as a cluster label in the first set e.g. ```Ecoli``` must be a cluster label in ```species_ref```.
+For this to work, each reference set in the second level must be present as a cluster label in the first level e.g. ```Ecoli``` must be a cluster label in ```species_ref```.
 
 Example command:
 
