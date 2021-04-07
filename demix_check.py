@@ -99,8 +99,8 @@ if out_d:
 
 
 # collect reference information ########
-sys.stderr.write("Finding reference set/s...\n")
 if ref_in:
+    sys.stderr.write("Finding reference set/s...\n")
     if os.path.isfile(ref_in):
         ref_str=pd.read_csv(ref_in, sep="\t", header=None)
     elif os.path.isdir(ref_in):
