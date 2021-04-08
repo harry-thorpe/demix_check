@@ -112,7 +112,7 @@ This will do the following:
 * Calculate appropriate thresholds for each cluster within the reference set
 * Plot the within and between cluster distances along with the thresholds
 
-This reference set is then ready for use. If the thresholds aren't appropriate, they can be adjusted with the ```--thr_prop_exp``` and ```--thr_prop_min``` options, and specifying ```--redo_thr``` will quickly recalculate the thresholds without doing the rest of the reference set up (creating and indexing the fasta file etc).
+This reference set is then ready for use. If the thresholds aren't appropriate, they can be adjusted with the ```--thr_prop_exp``` and ```--thr_prop_min/--thr_abs_min``` options, and specifying ```--redo_thr``` will quickly recalculate the thresholds without doing the rest of the reference set up (creating and indexing the fasta file etc).
 
 ### check
 
