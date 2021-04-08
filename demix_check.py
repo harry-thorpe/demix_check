@@ -38,9 +38,10 @@ mode_group.add_argument('--mode_run', action="store_true", default=False, help='
 
 # args specific to setup mode
 setup_group=parser.add_argument_group('Setup arguments', 'Arguments for setup mode')
-setup_group.add_argument('--redo_thr', action="store_true", default=False, help='quickly recalculate thresholds only (based on --thr_prop_exp and/or --thr_prop_min). The reference set must have been previously set up before running with this option [default = off]')
+setup_group.add_argument('--redo_thr', action="store_true", default=False, help='quickly recalculate thresholds only (based on --thr_prop_exp and/or --thr_prop_min/--thr_abs_min). The reference set must have been previously set up before running with this option [default = off]')
 setup_group.add_argument('--thr_prop_exp', type=float, default=0.2, help='proportion of maximum divergence within a cluster to expand the threshold by [default = %(default)s]')
 setup_group.add_argument('--thr_prop_min', type=float, default=0.2, help='proportion of median divergence between clusters to set minimum threshold to [default = %(default)s]')
+setup_group.add_argument('--thr_abs_min', type=float, help='absolute minimum threshold [default = not set] [overrides --thr_prop_min]')
 
 # args specific to check mode
 check_group=parser.add_argument_group('Check arguments', 'Arguments for check mode')
@@ -73,6 +74,7 @@ mode_run=args.mode_run
 redo_thr=args.redo_thr
 thr_prop_exp=args.thr_prop_exp
 thr_prop_min=args.thr_prop_min
+thr_abs_min=args.thr_abs_min
 
 binned_reads_d=args.binned_reads_dir
 msweep_abun=args.msweep_abun
@@ -136,7 +138,7 @@ if mode_setup:
     for ref_d in ref_ds:
         if os.path.isdir(ref_d) and os.path.isfile("{}/ref_info.tsv".format(ref_d)):
             
-            setup_reference(mash_exec, themisto_build_exec, ref_d, t, ss, thr_prop_min, thr_prop_exp, redo_thr)
+            setup_reference(mash_exec, themisto_build_exec, ref_d, t, ss, thr_prop_min, thr_abs_min, thr_prop_exp, redo_thr)
             
             if plots:
                 sys.stderr.write("Plotting output...\n")

@@ -10,7 +10,7 @@ import numpy as np
 
 from sketch import *
 
-def setup_reference(mash_exec, themisto_build_exec, d, t, ss, thr_prop_min, thr_prop_exp, redo_thr):
+def setup_reference(mash_exec, themisto_build_exec, d, t, ss, thr_prop_min, thr_abs_min, thr_prop_exp, redo_thr):
     sys.stderr.write("Setting up reference set {}...\n".format(d))
 
     seq_info_f="{}/ref_info.tsv".format(d)
@@ -28,7 +28,7 @@ def setup_reference(mash_exec, themisto_build_exec, d, t, ss, thr_prop_min, thr_
     if redo_thr == True:
         
         sys.stderr.write("Calculating thresholds...\n")
-        get_thresholds(clu_out, msh_dis_clu_out, thr_prop_min, thr_prop_exp, clu_thr_out)
+        get_thresholds(clu_out, msh_dis_clu_out, thr_prop_min, thr_abs_min, thr_prop_exp, clu_thr_out)
     
     else:
         log=open("{}/ref.log".format(d), 'w')
@@ -65,7 +65,7 @@ def setup_reference(mash_exec, themisto_build_exec, d, t, ss, thr_prop_min, thr_
         add_clusters(clu_out, msh_dis_out, msh_dis_clu_out, ref=True, met=True)
         
         sys.stderr.write("Calculating thresholds...\n")
-        get_thresholds(clu_out, msh_dis_clu_out, thr_prop_min, thr_prop_exp, clu_thr_out)
+        get_thresholds(clu_out, msh_dis_clu_out, thr_prop_min, thr_abs_min, thr_prop_exp, clu_thr_out)
     
         idx_d="{}/ref_idx".format(d)
         idx_d_tmp="{}/ref_idx/tmp".format(d)
@@ -85,7 +85,7 @@ def setup_reference(mash_exec, themisto_build_exec, d, t, ss, thr_prop_min, thr_
 
         log.close()
 
-def get_thresholds(in_clu, in_dis, thr_prop_min, thr_prop_exp, out_file):
+def get_thresholds(in_clu, in_dis, thr_prop_min, thr_abs_min, thr_prop_exp, out_file):
     
     clu=pd.read_csv(in_clu, sep="\t")
     clu=clu.groupby("cluster", as_index=False).agg(n=("id", "count"))
@@ -115,6 +115,8 @@ def get_thresholds(in_clu, in_dis, thr_prop_min, thr_prop_exp, out_file):
     dis=dis[["cluster", "threshold", "dis_same_max"]]
     
     t_min=np.median(dis_diff["dis_diff_med"])*thr_prop_min
+    if thr_abs_min:
+        t_min=thr_abs_min
     t_med=np.median(dis["threshold"])
     t_comp=np.where(t_med < t_min, t_min, t_med)
 
