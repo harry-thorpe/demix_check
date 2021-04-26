@@ -46,8 +46,23 @@ def run_mGEMS(themisto_align_exec, mSWEEP_exec, mGEMS_exec, t, min_abun, r1, r2,
     std_result=subprocess.run(mSWEEP_cmd, shell=True, check=True, capture_output=True, text=True)
     log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
     
+    abun_tmp=pd.read_csv(msweep_abun, sep="\t", comment="#", names=["cluster", "abundance"])
+    abun_tmp=abun_tmp.query("abundance >= {}".format(min_abun))
+
+    clus_to_bin=abun_tmp["cluster"].to_list()
+    clus_to_ext=["{}/".format(out_d_bin) + x for x in clus_to_bin]
+    clus_to_ext=[x + ".bin" for x in clus_to_ext]
+
+    clus_to_bin=",".join(clus_to_bin)
+    clus_to_ext=",".join(clus_to_ext)
+
     sys.stderr.write("Binning reads with mGEMS...\n")
-    mGEMS_cmd="{} -r {},{} --themisto-alns {},{} -o {} --probs {} -a {} --index {} --min-abundance {}".format(mGEMS_exec, r1, r2, r_ali1, r_ali2, out_d_bin, msweep_abun_prob, msweep_abun, ref_idx, min_abun)
+    mGEMS_cmd="{} bin --groups {} --themisto-alns {},{} -o {} --probs {} -a {} --index {} --min-abundance {}".format(mGEMS_exec, clus_to_bin, r_ali1, r_ali2, out_d_bin, msweep_abun_prob, msweep_abun, ref_idx, min_abun)
+    std_result=subprocess.run(mGEMS_cmd, shell=True, check=True, capture_output=True, text=True)
+    log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
+    
+    sys.stderr.write("Extracting reads with mGEMS...\n")
+    mGEMS_cmd="{} extract --bins {} -r {},{} -o {}".format(mGEMS_exec, clus_to_ext, r1, r2, out_d_bin)
     std_result=subprocess.run(mGEMS_cmd, shell=True, check=True, capture_output=True, text=True)
     log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
     
