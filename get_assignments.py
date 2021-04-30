@@ -29,7 +29,7 @@ def run_mGEMS(themisto_align_exec, mSWEEP_exec, mGEMS_exec, t, min_abun, r1, r2,
     r_ali1_p=re.sub(r'.gz$', '', r_ali1)
     r_ali2_p=re.sub(r'.gz$', '', r_ali2)
     msweep_abun_p=re.sub(r'_abundances.txt$', '', msweep_abun)
-    msweep_abun_prob="{}/msweep_probs.csv".format(out_d)
+    msweep_abun_prob="{}/msweep_probs.csv.gz".format(out_d)
     
     sys.stderr.write("Pseudoaligning r1 reads with themisto...\n")
     themisto_cmd="{} --index-dir {} --query-file {} --outfile {} --rc --temp-dir {}/tmp --n-threads {} --sort-output --gzip-output".format(themisto_align_exec, ref_idx, r1, r_ali1_p, ref_idx, t)
@@ -42,7 +42,7 @@ def run_mGEMS(themisto_align_exec, mSWEEP_exec, mGEMS_exec, t, min_abun, r1, r2,
     log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
     
     sys.stderr.write("Estimating abundances with mSWEEP...\n")
-    mSWEEP_cmd="{} -t 1 --themisto-1 {} --themisto-2 {} -o {} -i {} --write-probs".format(mSWEEP_exec, r_ali1, r_ali2, msweep_abun_p, ref_clu)
+    mSWEEP_cmd="{} -t {} --themisto-1 {} --themisto-2 {} -o {} -i {} --write-probs --gzip-probs".format(mSWEEP_exec, t, r_ali1, r_ali2, msweep_abun_p, ref_clu)
     std_result=subprocess.run(mSWEEP_cmd, shell=True, check=True, capture_output=True, text=True)
     log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
     
