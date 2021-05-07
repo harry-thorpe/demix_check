@@ -11,7 +11,7 @@ ref_d=args[1]
 out_f=paste(ref_d, "/ref_dis_plot.pdf", sep="")
 ref=basename(ref_d)
 
-dis_ref <- read_tsv(paste(ref_d, "/ref_msh_dis_clu.tsv", sep="")) %>%
+dis_ref <- read_tsv(paste(ref_d, "/ref_msh_dis_clu.tsv.gz", sep="")) %>%
   filter(ref_id != met_id) %>%
   mutate(method="mash",
          comparison="ref_ref",

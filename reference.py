@@ -3,6 +3,7 @@
 import os
 import sys
 import subprocess
+import gzip
 
 import re
 import pandas as pd
@@ -17,10 +18,10 @@ def setup_reference(mash_exec, themisto_build_exec, d, t, ss, thr_prop_min, thr_
     seq_info=pd.read_csv(seq_info_f, sep="\t")
     seq_count=len(seq_info)
     
-    fa_out="{}/ref.fasta".format(d)
+    fa_out="{}/ref.fasta.gz".format(d)
     msh_out="{}/ref.msh".format(d)
-    msh_dis_out="{}/ref_msh_dis.tsv".format(d)
-    msh_dis_clu_out="{}/ref_msh_dis_clu.tsv".format(d)
+    msh_dis_out="{}/ref_msh_dis.tsv.gz".format(d)
+    msh_dis_clu_out="{}/ref_msh_dis_clu.tsv.gz".format(d)
     clu_thr_out="{}/ref_clu_thr.tsv".format(d)
     clu_out_m="{}/ref_clu.txt".format(d)
     clu_out="{}/ref_clu.tsv".format(d)
@@ -34,18 +35,22 @@ def setup_reference(mash_exec, themisto_build_exec, d, t, ss, thr_prop_min, thr_
         log=open("{}/ref.log".format(d), 'w')
         
         sys.stderr.write("Creating multifasta...\n")
-        fo=open(fa_out, 'w')
+        fo=gzip.open(fa_out, 'wt')
         for i in range(seq_count):
             seq_id=seq_info["id"][i]
             cluster=seq_info["cluster"][i]
             assembly=seq_info["assembly"][i]
 
             fo.write(">{}\n".format(seq_id))
-        
-            f_tmp=open(assembly, 'r')
+            
+            if assembly.endswith('.gz'):
+                f_tmp=gzip.open(assembly, 'r')
+            else:
+                f_tmp=open(assembly, 'r')
             for l in f_tmp:
                 if not re.match(r'^>', l):
                     fo.write(l)
+            f_tmp.close()
         fo.close()
 
         clu_m=seq_info[["cluster"]]

@@ -54,10 +54,10 @@ def check_mGEMS(mash_exec, t, ss, m, min_abun, ref_d, out_d, binned_reads_d, msw
         r_f="{} {}".format(r1, r2)
 
         msh_out="{}/{}.msh".format(out_d_sketch, cluster)
-        msh_dis_out="{}/{}_msh_dis.tsv".format(out_d_sketch, cluster)
-        msh_dis_clu_out="{}/{}_msh_dis_clu.tsv".format(out_d_sketch, cluster)
-        msh_scr_dis_out="{}/{}_msh_scr_dis.tsv".format(out_d_sketch, cluster)
-        msh_scr_dis_clu_out="{}/{}_msh_scr_dis_clu.tsv".format(out_d_sketch, cluster)
+        msh_dis_out="{}/{}_msh_dis.tsv.gz".format(out_d_sketch, cluster)
+        msh_dis_clu_out="{}/{}_msh_dis_clu.tsv.gz".format(out_d_sketch, cluster)
+        msh_scr_dis_out="{}/{}_msh_scr_dis.tsv.gz".format(out_d_sketch, cluster)
+        msh_scr_dis_clu_out="{}/{}_msh_scr_dis_clu.tsv.gz".format(out_d_sketch, cluster)
         
         sys.stderr.write("Creating mash sketches...\n")
         std_result=run_mash_sketch(mash_exec, t, r_f, msh_out, ss, m, in_type="fq")

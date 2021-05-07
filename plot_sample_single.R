@@ -29,7 +29,7 @@ for(i in 1:nrow(summary)){
   score=summary$score[i]
   idx=summary$idx[i]
   
-  dis_ref <- read_tsv(paste(ref_d, "/ref_msh_dis_clu.tsv", sep="")) %>%
+  dis_ref <- read_tsv(paste(ref_d, "/ref_msh_dis_clu.tsv.gz", sep="")) %>%
     filter(ref_id != met_id) %>%
     filter(met_cluster == clu) %>%
     mutate(method="mash",
@@ -46,7 +46,7 @@ for(i in 1:nrow(summary)){
   thr <- read_tsv(paste(ref_d, "/ref_clu_thr.tsv", sep="")) %>%
     mutate(met_cluster=cluster, ref_cluster=cluster)
   
-  dis_query_m <- read_tsv(paste(out_d, "/binned_reads_sketches/", clu, "_msh_dis_clu.tsv", sep="")) %>%
+  dis_query_m <- read_tsv(paste(out_d, "/binned_reads_sketches/", clu, "_msh_dis_clu.tsv.gz", sep="")) %>%
     mutate(method="mash",
            comparison="query_ref",
            category=ifelse(clu == ref_cluster, "same cluster", "different cluster"))

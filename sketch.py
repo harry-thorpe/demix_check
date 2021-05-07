@@ -3,6 +3,7 @@
 import os
 import sys
 import subprocess
+import gzip
 
 import re
 import pandas as pd
@@ -26,9 +27,9 @@ def run_mash_sketch(mash_exec, t, in_file, out_file, ss, m, in_type):
 def run_mash_dist(mash_exec, t, ref_file, query_file, out_file):
     std_result=""
 
-    out_file_tmp="{}.tmp".format(out_file)
+    out_file_tmp="{}.tmp.gz".format(out_file)
 
-    mash_cmd="{} dist -p {} {} {} > {}".format(mash_exec, t, ref_file, query_file, out_file_tmp)
+    mash_cmd="{} dist -p {} {} {} | gzip > {}".format(mash_exec, t, ref_file, query_file, out_file_tmp)
     std_result=subprocess.run(mash_cmd, shell=True, check=True, capture_output=True, text=True)
 
     data=pd.read_csv(out_file_tmp, sep="\t", names=["ref_id", "met_id", "distance", "p", "hashes"])
@@ -43,9 +44,9 @@ def run_mash_dist(mash_exec, t, ref_file, query_file, out_file):
 def run_mash_screen(mash_exec, t, ref_file, query_file, out_file, met_id):
     std_result=""
 
-    out_file_tmp="{}.tmp".format(out_file)
+    out_file_tmp="{}.tmp.gz".format(out_file)
 
-    mash_cmd="{} screen -p {} {} {} > {}".format(mash_exec, t, ref_file, query_file, out_file_tmp)
+    mash_cmd="{} screen -p {} {} {} | gzip > {}".format(mash_exec, t, ref_file, query_file, out_file_tmp)
     std_result=subprocess.run(mash_cmd, shell=True, check=True, capture_output=True, text=True)
 
     data=pd.read_csv(out_file_tmp, sep="\t", names=["distance", "hashes", "coverage", "p", "ref_id", "TMP"])
