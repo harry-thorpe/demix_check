@@ -1,9 +1,11 @@
 #!/usr/bin/env Rscript
 
 library(tidyverse)
-library(cowplot)
 
-theme_set(theme_cowplot())
+theme_classic_mod <- theme_classic() +
+  theme(axis.text=element_text(colour="black"))
+
+theme_set(theme_classic_mod)
 
 args <- commandArgs(trailingOnly=TRUE)
 
