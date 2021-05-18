@@ -60,7 +60,7 @@ general_group.add_argument('--ref', type=str, required='--mode_setup' in sys.arg
 general_group.add_argument('--min_abun', type=float, default=0.01, help='mSWEEP/mGEMS - only accept clusters with this abundance or greater [default = %(default)s]')
 general_group.add_argument('--kmer_min_freq', type=int, default=3, help='mash - only use kmers with this frequency or greater [default = %(default)d]')
 general_group.add_argument('--sketch_size', type=int, default=10000, help='mash - sketch size to use [default = %(default)d]')
-general_group.add_argument('--plots', action="store_true", default=False, help='plot results (requires R and the tidyverse packages) [default = off]')
+general_group.add_argument('--plots', action="store_true", default=False, help='plot results (requires R and the tidyverse and cowplot packages) [default = off]')
 general_group.add_argument('--threads', type=int, default=1, help='number of threads to use [default = %(default)d]')
 general_group.add_argument('-h', '--help', action='help', help="show this help message and exit")
 

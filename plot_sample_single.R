@@ -1,6 +1,7 @@
 #!/usr/bin/env Rscript
 
 library(tidyverse)
+library(cowplot)
 
 theme_classic_mod <- theme_classic() +
   theme(axis.text=element_text(colour="black"))

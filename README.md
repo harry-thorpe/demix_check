@@ -70,7 +70,7 @@ General arguments:
                         mash - only use kmers with this frequency or greater [default = 3]
   --sketch_size SKETCH_SIZE
                         mash - sketch size to use [default = 10000]
-  --plots               plot results (requires R and tidyverse ggplot cowplot) [default = off]
+  --plots               plot results (requires R and the tidyverse and cowplot packages) [default = off]
   --threads THREADS     number of threads to use [default = 1]
   -h, --help            show this help message and exit
 ```
