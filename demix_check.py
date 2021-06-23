@@ -62,6 +62,7 @@ general_group.add_argument('--kmer_min_freq', type=int, default=3, help='mash - 
 general_group.add_argument('--sketch_size', type=int, default=10000, help='mash - sketch size to use [default = %(default)d]')
 general_group.add_argument('--plots', action="store_true", default=False, help='plot results (requires R and the tidyverse and cowplot packages) [default = off]')
 general_group.add_argument('--threads', type=int, default=1, help='number of threads to use [default = %(default)d]')
+general_group.add_argument('--keep', action="store_true", default=False, help='keep large intermediate files [default = off]')
 general_group.add_argument('-h', '--help', action='help', help="show this help message and exit")
 
 # set up arg vars
@@ -89,6 +90,7 @@ m=args.kmer_min_freq
 ss=args.sketch_size
 t=args.threads
 plots=args.plots
+keep=args.keep
 
 # trim trailing slashes
 if binned_reads_d:
@@ -201,7 +203,7 @@ if mode_run:
                 msweep_abun="{}/msweep_abundances.txt".format(out_dr)
                 
                 # run the mSWEEP/mGEMS pipeline
-                run_mGEMS(themisto_align_exec, mSWEEP_exec, mGEMS_exec, t, min_abun, rr1, rr2, ref_d, out_dr, binned_reads_d, msweep_abun)
+                run_mGEMS(themisto_align_exec, mSWEEP_exec, mGEMS_exec, t, min_abun, rr1, rr2, ref_d, out_dr, binned_reads_d, msweep_abun, keep)
 
                 # check the mGEMS bins
                 check_mGEMS(mash_exec, t, ss, m, min_abun, ref_d, out_dr, binned_reads_d, msweep_abun)

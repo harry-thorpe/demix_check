@@ -72,6 +72,7 @@ General arguments:
                         mash - sketch size to use [default = 10000]
   --plots               plot results (requires R and the tidyverse and cowplot packages) [default = off]
   --threads THREADS     number of threads to use [default = 1]
+  --keep                keep large intermediate files [default = off]
   -h, --help            show this help message and exit
 ```
 

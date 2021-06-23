@@ -66,6 +66,11 @@ def run_mGEMS(themisto_align_exec, mSWEEP_exec, mGEMS_exec, t, min_abun, r1, r2,
     std_result=subprocess.run(mGEMS_cmd, shell=True, check=True, capture_output=True, text=True)
     log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
     
+    if not keep:
+        os.remove(msweep_abun_prob)
+        os.remove(r_ali1)
+        os.remove(r_ali2)
+    
     sys.stderr.write("mSWEEP/mGEMS pipeline on {},{} completed\n".format(r1, r2))
 
     log.close()
