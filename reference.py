@@ -44,7 +44,7 @@ def setup_reference(mash_exec, themisto_build_exec, d, t, ss, thr_prop_min, thr_
             fo.write(">{}\n".format(seq_id))
             
             if assembly.endswith('.gz'):
-                f_tmp=gzip.open(assembly, 'r')
+                f_tmp=gzip.open(assembly, 'rt')
             else:
                 f_tmp=open(assembly, 'r')
             for l in f_tmp:
