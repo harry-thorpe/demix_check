@@ -32,7 +32,7 @@ def run_mash_dist(mash_exec, t, ref_file, query_file, out_file):
     mash_cmd="{} dist -p {} {} {} | gzip > {}".format(mash_exec, t, ref_file, query_file, out_file_tmp)
     std_result=subprocess.run(mash_cmd, shell=True, check=True, capture_output=True, text=True)
 
-    data=pd.read_csv(out_file_tmp, sep="\t", names=["ref_id", "met_id", "distance", "p", "hashes"])
+    data=pd.read_csv(out_file_tmp, sep="\t", names=["ref_id", "met_id", "distance", "p", "hashes"], dtype={'ref_id': 'str', 'met_id': 'str'})
     data[["hashes", "ss"]]=data.hashes.str.split('/', expand=True)
     data=data[["ref_id", "met_id", "distance", "hashes", "ss", "p"]]
     data.to_csv(out_file, sep="\t", index=False)
@@ -49,7 +49,7 @@ def run_mash_screen(mash_exec, t, ref_file, query_file, out_file, met_id):
     mash_cmd="{} screen -p {} {} {} | gzip > {}".format(mash_exec, t, ref_file, query_file, out_file_tmp)
     std_result=subprocess.run(mash_cmd, shell=True, check=True, capture_output=True, text=True)
 
-    data=pd.read_csv(out_file_tmp, sep="\t", names=["distance", "hashes", "coverage", "p", "ref_id", "TMP"])
+    data=pd.read_csv(out_file_tmp, sep="\t", names=["distance", "hashes", "coverage", "p", "ref_id", "TMP"], dtype={'ref_id': 'str'})
     data[["hashes", "ss"]]=data.hashes.str.split('/', expand=True)
     data["distance"]=1-data["distance"]
     data["met_id"]=met_id
@@ -61,9 +61,9 @@ def run_mash_screen(mash_exec, t, ref_file, query_file, out_file, met_id):
     return(std_result)
 
 def add_clusters(in_clu, in_dis, out_file, ref=False, met=False):
-    clu=pd.read_csv(in_clu, sep="\t")
+    clu=pd.read_csv(in_clu, sep="\t", dtype={'id': 'str'})
     
-    data=pd.read_csv(in_dis, sep="\t")
+    data=pd.read_csv(in_dis, sep="\t", dtype={'ref_id': 'str', 'met_id': 'str'})
     if ref == True:
         data=data.merge(clu, how="left", left_on="ref_id", right_on="id")
         data=data.rename(columns={"cluster":"ref_cluster"})

@@ -15,7 +15,7 @@ def setup_reference(mash_exec, themisto_build_exec, d, t, ss, thr_prop_min, thr_
     sys.stderr.write("Setting up reference set {}...\n".format(d))
 
     seq_info_f="{}/ref_info.tsv".format(d)
-    seq_info=pd.read_csv(seq_info_f, sep="\t")
+    seq_info=pd.read_csv(seq_info_f, sep="\t", dtype={'id': 'str'})
     seq_count=len(seq_info)
     
     fa_out="{}/ref.fasta.gz".format(d)
@@ -92,10 +92,10 @@ def setup_reference(mash_exec, themisto_build_exec, d, t, ss, thr_prop_min, thr_
 
 def get_thresholds(in_clu, in_dis, thr_prop_min, thr_abs_min, thr_prop_exp, out_file):
     
-    clu=pd.read_csv(in_clu, sep="\t")
+    clu=pd.read_csv(in_clu, sep="\t", dtype={'id': 'str'})
     clu=clu.groupby("cluster", as_index=False).agg(n=("id", "count"))
 
-    dis=pd.read_csv(in_dis, sep="\t")
+    dis=pd.read_csv(in_dis, sep="\t", dtype={'ref_id': 'str', 'met_id': 'str'})
 
     dis_diff=dis.query("ref_cluster != met_cluster")
     dis_diff=dis_diff.query("ref_id != met_id")

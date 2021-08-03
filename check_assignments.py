@@ -72,7 +72,7 @@ def check_mGEMS(mash_exec, t, ss, m, min_abun, ref_d, out_d, binned_reads_d, msw
         #log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
         #add_clusters(ref_clu, msh_scr_dis_out, msh_scr_dis_clu_out, ref=True, met=False)
         
-        dis=pd.read_csv(msh_dis_clu_out, sep="\t")
+        dis=pd.read_csv(msh_dis_clu_out, sep="\t", dtype={'ref_id': 'str', 'met_id': 'str'})
         dis=dis[(dis.ref_cluster == cluster)]
 
         thr=pd.read_csv(ref_clu_thr, sep="\t")
