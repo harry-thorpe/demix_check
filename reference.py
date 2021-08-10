@@ -11,7 +11,7 @@ import numpy as np
 
 from sketch import *
 
-def setup_reference(mash_exec, themisto_build_exec, d, t, ss, thr_prop_min, thr_abs_min, thr_prop_exp, redo_thr):
+def setup_reference(mash_exec, themisto_build_exec, seqtk_exec, d, t, ss, thr_prop_min, thr_abs_min, thr_prop_exp, redo_thr):
     sys.stderr.write("Setting up reference set {}...\n".format(d))
 
     seq_info_f="{}/ref_info.tsv".format(d)
@@ -25,6 +25,8 @@ def setup_reference(mash_exec, themisto_build_exec, d, t, ss, thr_prop_min, thr_
     clu_thr_out="{}/ref_clu_thr.tsv".format(d)
     clu_out_m="{}/ref_clu.txt".format(d)
     clu_out="{}/ref_clu.tsv".format(d)
+    comp_out="{}/ref_comp.tsv".format(d)
+    clu_comp_out="{}/ref_clu_comp.tsv".format(d)
 
     if redo_thr == True:
         
@@ -59,6 +61,8 @@ def setup_reference(mash_exec, themisto_build_exec, d, t, ss, thr_prop_min, thr_
         clu=seq_info[["id", "cluster"]]
         clu.to_csv(clu_out, sep="\t", index=False)
         
+        get_comp(seqtk_exec, clu_out, fa_out, comp_out, clu_comp_out)
+
         sys.stderr.write("Creating mash sketches...\n")
         std_result=run_mash_sketch(mash_exec, t, fa_out, msh_out, ss, m=None, in_type="fa")
         log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
@@ -132,4 +136,25 @@ def get_thresholds(in_clu, in_dis, thr_prop_min, thr_abs_min, thr_prop_exp, out_
     t_summary["dis_diff_med_all"]=dis_diff_med_med
 
     t_summary.to_csv(out_file, sep="\t", index=False)
+
+def get_comp(seqtk_exec, in_clu, in_fa, out_file, out_file_summary):
+    
+    clu=pd.read_csv(in_clu, sep="\t", dtype={'id': 'str'})
+    
+    setup_cmd="echo \"id\tlength\t#A\t#C\t#G\t#T\t#2\t#3\t#4\t#CpG\t#tv\t#ts\t#CpG-ts\" > {}".format(out_file)
+    std_result=subprocess.run(setup_cmd, shell=True, check=True, capture_output=True, text=True)
+    seqtk_cmd="{} comp {} >> {}".format(seqtk_exec, in_fa, out_file)
+    std_result=subprocess.run(seqtk_cmd, shell=True, check=True, capture_output=True, text=True)
+
+    lens=pd.read_csv(out_file, sep="\t", dtype={'id': 'str'})
+    lens=lens[["id", "length"]]
+
+    clu_lens=clu.merge(lens, how="left", on="id")
+    clu_lens=clu_lens.groupby("cluster", as_index=False).agg(
+            n=("id", "count"),
+            length_ave=("length", "mean"),
+            length_min=("length", "min"),
+            length_max=("length", "max"))
+
+    clu_lens.to_csv(out_file_summary, sep="\t", index=False)
 

@@ -22,6 +22,7 @@ themisto_align_exec='pseudoalign'
 mSWEEP_exec='mSWEEP'
 mGEMS_exec='mGEMS'
 mash_exec='mash'
+seqtk_exec='seqtk'
 
 dir_path=os.path.dirname(__file__)
 
@@ -140,7 +141,7 @@ if mode_setup:
     for ref_d in ref_ds:
         if os.path.isdir(ref_d) and os.path.isfile("{}/ref_info.tsv".format(ref_d)):
             
-            setup_reference(mash_exec, themisto_build_exec, ref_d, t, ss, thr_prop_min, thr_abs_min, thr_prop_exp, redo_thr)
+            setup_reference(mash_exec, themisto_build_exec, seqtk_exec, ref_d, t, ss, thr_prop_min, thr_abs_min, thr_prop_exp, redo_thr)
             
             if plots:
                 sys.stderr.write("Plotting output...\n")
