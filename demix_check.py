@@ -157,7 +157,7 @@ if mode_check:
     
     sys.stderr.write("Running in check mode...\n")
     ref_d=ref_ds[0]
-    check_mGEMS(mash_exec, t, ss, m, min_abun, ref_d, out_d, binned_reads_d, msweep_abun)
+    check_mGEMS(mash_exec, seqtk_exec, t, ss, m, min_abun, ref_d, out_d, binned_reads_d, msweep_abun)
 
     if plots:
         sys.stderr.write("Plotting output...\n")
@@ -207,7 +207,7 @@ if mode_run:
                 run_mGEMS(themisto_align_exec, mSWEEP_exec, mGEMS_exec, t, min_abun, rr1, rr2, ref_d, out_dr, binned_reads_d, msweep_abun, keep)
 
                 # check the mGEMS bins
-                check_mGEMS(mash_exec, t, ss, m, min_abun, ref_d, out_dr, binned_reads_d, msweep_abun)
+                check_mGEMS(mash_exec, seqtk_exec, t, ss, m, min_abun, ref_d, out_dr, binned_reads_d, msweep_abun)
                 if plots:
                     sys.stderr.write("Plotting output...\n")
                     plot_cmd="Rscript {}/plot_sample_single.R {} {}".format(dir_path, out_dr, ref_d)

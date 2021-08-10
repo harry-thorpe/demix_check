@@ -10,7 +10,7 @@ import numpy as np
 
 from sketch import *
 
-def check_mGEMS(mash_exec, t, ss, m, min_abun, ref_d, out_d, binned_reads_d, msweep_abun):
+def check_mGEMS(mash_exec, seqtk_exec, t, ss, m, min_abun, ref_d, out_d, binned_reads_d, msweep_abun):
     sys.stderr.write("Checking analysis {} against reference set {}...\n".format(binned_reads_d, ref_d))
 
     ref_idx="{}/ref_idx".format(ref_d)
@@ -28,10 +28,12 @@ def check_mGEMS(mash_exec, t, ss, m, min_abun, ref_d, out_d, binned_reads_d, msw
 
     ref_msh="{}/ref.msh".format(ref_d)
     ref_clu_thr="{}/ref_clu_thr.tsv".format(ref_d)
-    
+    ref_len="{}/ref_clu_comp.tsv".format(out_d)
+    ref_len=ref_len[["cluster", "length_ave"]]
+
     abun_out="{}/msweep_abundances.tsv".format(out_d)
     abun_out_filt="{}/msweep_abundances_filt.tsv".format(out_d)
-    
+
     clu_score_out="{}/clu_score.tsv".format(out_d)
     
     abun_tmp=pd.read_csv(msweep_abun, sep="\t", comment="#", names=["cluster", "abundance"])
@@ -43,7 +45,11 @@ def check_mGEMS(mash_exec, t, ss, m, min_abun, ref_d, out_d, binned_reads_d, msw
     clu=pd.read_csv(abun_out_filt, sep="\t")
     clu_count=len(clu)
     clu_score=clu
+    clu_score=clu_score.merge(ref_len, how="left", on="cluster")
     clu_score["score"]=0
+    clu_score["read_count"]=0
+    clu_score["total_bases"]=0
+    clu_score["coverage"]=0
     
     sys.stderr.write("Found {} cluster/s in {}\n".format(clu_count, binned_reads_d))
     for i in range(clu_count):
@@ -92,6 +98,18 @@ def check_mGEMS(mash_exec, t, ss, m, min_abun, ref_d, out_d, binned_reads_d, msw
             clu_score['score']=np.where(clu_score['cluster'] == cluster, 3, clu_score['score'])
         else:
             clu_score['score']=np.where(clu_score['cluster'] == cluster, 4, clu_score['score'])
+
+        seqtk_cmd="{} fqchk {}".format(seqtk_exec, r1)
+        std_result=subprocess.run(seqtk_cmd, shell=True, check=True, capture_output=True, text=True)
+        total_bases=0
+        read_len=0
+        total_bases=int(re.search(r'ALL\t(\d+)\t', std_result.stdout).group(1))*2
+        read_len=float(re.search(r'avg_len:\s+([^;]+);', res.stdout).group(1))
+        read_count=total_bases/read_len
+
+        clu_score['read_count']=np.where(clu_score['cluster'] == cluster, read_count, clu_score['read_count'])
+        clu_score['total_bases']=np.where(clu_score['cluster'] == cluster, total_bases, clu_score['total_bases'])
+        clu_score['coverage']=np.where(clu_score['cluster'] == cluster, clu_score['total_bases']/clu_score['length_ave'], clu_score['coverage'])
 
     clu_score.to_csv(clu_score_out, sep="\t", index=False)
     

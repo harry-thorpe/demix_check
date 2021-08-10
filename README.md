@@ -10,6 +10,7 @@ This pipeline assess the demixed binned reads from an mGEMS analysis to help wit
 * mSWEEP
 * mGEMS
 * mash
+* seqtk
 
 ## Running the pipeline
 
