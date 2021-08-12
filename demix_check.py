@@ -59,7 +59,6 @@ general_group=parser.add_argument_group('General arguments')
 general_group.add_argument('--out_dir', type=str, required='--mode_check' in sys.argv or '--mode_run' in sys.argv, help='output directory')
 general_group.add_argument('--ref', type=str, required='--mode_setup' in sys.argv or '--mode_check' in sys.argv or '--mode_run' in sys.argv, help='reference set/s to use [either a string specifying the path to the reference directory or a file containing paths to the reference directories]')
 general_group.add_argument('--min_abun', type=float, default=0.01, help='mSWEEP/mGEMS - only accept clusters with this abundance or greater [default = %(default)s]')
-general_group.add_argument('--kmer_min_freq', type=int, default=3, help='mash - only use kmers with this frequency or greater [default = %(default)d]')
 general_group.add_argument('--sketch_size', type=int, default=10000, help='mash - sketch size to use [default = %(default)d]')
 general_group.add_argument('--plots', action="store_true", default=False, help='plot results (requires R and the tidyverse and cowplot packages) [default = off]')
 general_group.add_argument('--threads', type=int, default=1, help='number of threads to use [default = %(default)d]')
@@ -87,7 +86,6 @@ r2=args.r2
 out_d=args.out_dir
 ref_in=args.ref
 min_abun=args.min_abun
-m=args.kmer_min_freq
 ss=args.sketch_size
 t=args.threads
 plots=args.plots
@@ -157,7 +155,7 @@ if mode_check:
     
     sys.stderr.write("Running in check mode...\n")
     ref_d=ref_ds[0]
-    check_mGEMS(mash_exec, seqtk_exec, t, ss, m, min_abun, ref_d, out_d, binned_reads_d, msweep_abun)
+    check_mGEMS(mash_exec, seqtk_exec, t, ss, min_abun, ref_d, out_d, binned_reads_d, msweep_abun)
 
     if plots:
         sys.stderr.write("Plotting output...\n")
@@ -207,7 +205,7 @@ if mode_run:
                 run_mGEMS(themisto_align_exec, mSWEEP_exec, mGEMS_exec, t, min_abun, rr1, rr2, ref_d, out_dr, binned_reads_d, msweep_abun, keep)
 
                 # check the mGEMS bins
-                check_mGEMS(mash_exec, seqtk_exec, t, ss, m, min_abun, ref_d, out_dr, binned_reads_d, msweep_abun)
+                check_mGEMS(mash_exec, seqtk_exec, t, ss, min_abun, ref_d, out_dr, binned_reads_d, msweep_abun)
                 if plots:
                     sys.stderr.write("Plotting output...\n")
                     plot_cmd="Rscript {}/plot_sample_single.R {} {}".format(dir_path, out_dr, ref_d)
