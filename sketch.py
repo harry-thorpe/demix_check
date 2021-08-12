@@ -9,6 +9,19 @@ import re
 import pandas as pd
 import numpy as np
 
+def run_mash_paste(mash_exec, in_file, out_file):
+    std_result=""
+    
+    if os.path.isfile(out_file):
+        os.remove(out_file)
+
+    out_file_p=re.sub(r'.msh$', '', out_file)
+
+    mash_cmd="{} paste {} {}".format(mash_exec, out_file_p, in_file)
+    std_result=subprocess.run(mash_cmd, shell=True, check=True, capture_output=True, text=True)
+
+    return(std_result)
+
 def run_mash_sketch(mash_exec, t, in_file, out_file, ss, m, in_type):
     std_result=""
 

@@ -35,6 +35,10 @@ def check_mGEMS(mash_exec, seqtk_exec, t, ss, min_abun, ref_d, out_d, binned_rea
 
     clu_score_out="{}/clu_score.tsv".format(out_d)
     
+    all_clu_msh_in="{}/*.msh".format(out_d_sketch)
+    all_clu_msh_out="{}/all_clu.msh".format(out_d)
+    all_clu_msh_dis_out="{}/all_clu_msh_dis.tsv.gz".format(out_d)
+    
     abun_tmp=pd.read_csv(msweep_abun, sep="\t", comment="#", names=["cluster", "abundance"])
     abun_tmp.to_csv(abun_out, sep="\t", index=False)
 
@@ -72,7 +76,7 @@ def check_mGEMS(mash_exec, seqtk_exec, t, ss, min_abun, ref_d, out_d, binned_rea
         msh_dis_clu_out="{}/{}_msh_dis_clu.tsv.gz".format(out_d_sketch, cluster)
         msh_scr_dis_out="{}/{}_msh_scr_dis.tsv.gz".format(out_d_sketch, cluster)
         msh_scr_dis_clu_out="{}/{}_msh_scr_dis_clu.tsv.gz".format(out_d_sketch, cluster)
-        
+
         r1="{}/{}_1.fastq.gz".format(binned_reads_d, cluster)
         r2="{}/{}_2.fastq.gz".format(binned_reads_d, cluster)
 
@@ -146,6 +150,11 @@ def check_mGEMS(mash_exec, seqtk_exec, t, ss, min_abun, ref_d, out_d, binned_rea
     
     clu_score_all.to_csv(clu_score_out, sep="\t", index=False)
     
+    std_result=run_mash_paste(mash_exec, all_clu_msh_in, all_clu_msh_out)
+    log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
+    std_result=run_mash_dist(mash_exec, t, all_clu_msh_out, all_clu_msh_out, all_clu_msh_dis_out)
+    log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
+
     sys.stderr.write("Analysis {} checking completed\n".format(binned_reads_d))
 
     log.close()
