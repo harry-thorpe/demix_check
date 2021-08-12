@@ -67,8 +67,6 @@ General arguments:
   --out_dir OUT_DIR     output directory
   --ref REF             reference set/s to use [either a string specifying the path to the reference directory or a file containing paths to the reference directories]
   --min_abun MIN_ABUN   mSWEEP/mGEMS - only accept clusters with this abundance or greater [default = 0.01]
-  --kmer_min_freq KMER_MIN_FREQ
-                        mash - only use kmers with this frequency or greater [default = 3]
   --sketch_size SKETCH_SIZE
                         mash - sketch size to use [default = 10000]
   --plots               plot results (requires R and the tidyverse and cowplot packages) [default = off]
