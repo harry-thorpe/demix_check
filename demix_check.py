@@ -188,6 +188,7 @@ if mode_run:
             if c == 0:
                 rr1=r1
                 rr2=r2
+                ref_p="input_reads"
             else:
                 ref_d_p=ref_str_d[ref_d]
                 ref_p=os.path.basename(ref_d_p)
@@ -201,6 +202,22 @@ if mode_run:
                 binned_reads_d="{}/binned_reads".format(out_dr)
                 msweep_abun="{}/msweep_abundances.txt".format(out_dr)
                 
+                ref_clu="{}/ref_clu.tsv".format(ref_d)
+                ref_msh="{}/ref.msh".format(ref_d)
+                rr12="{} {}".format(rr1, rr2)
+                msh_scr_dis_out="{}/msh_scr_dis.tsv.gz".format(out_dr)
+                msh_scr_dis_clu_out="{}/msh_scr_dis_clu.tsv.gz".format(out_dr)
+
+                # run mash screen
+                sys.stderr.write("Running mash screen...\n")
+                std_result=run_mash_screen(mash_exec, t, ref_msh, rr12, msh_scr_dis_out, ref_p)
+                add_clusters(ref_clu, msh_scr_dis_out, msh_scr_dis_clu_out, ref=True, met=False)
+                
+                if plots:
+                    sys.stderr.write("Plotting output...\n")
+                    plot_cmd="Rscript {}/plot_mash_screen.R {} {}".format(dir_path, out_dr, ref_d)
+                    subprocess.run(plot_cmd, shell=True, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
                 # run the mSWEEP/mGEMS pipeline
                 run_mGEMS(themisto_align_exec, mSWEEP_exec, mGEMS_exec, t, min_abun, rr1, rr2, ref_d, out_dr, binned_reads_d, msweep_abun, keep)
 
