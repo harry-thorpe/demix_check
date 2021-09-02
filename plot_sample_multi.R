@@ -58,7 +58,7 @@ for(i in 1:nrow(summary_l01)){
   l0_idx=summary_l01$l0_idx[i]
   l1_idx=summary_l01$l1_idx[i]
   
-  dis_ref <- read_tsv(paste(ref_d, "/ref_msh_dis_clu.tsv.gz", sep="")) %>%
+  dis_ref <- read_tsv(paste(ref_d, "/ref_msh_dis_clu.tsv.gz", sep=""), col_types="ccddddccc") %>%
     filter(ref_id != met_id) %>%
     filter(met_cluster == clu) %>%
     mutate(method="mash",

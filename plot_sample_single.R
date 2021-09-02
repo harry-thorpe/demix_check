@@ -32,7 +32,7 @@ for(i in 1:nrow(summary)){
   score=summary$score[i]
   idx=summary$idx[i]
   
-  dis_ref <- read_tsv(paste(ref_d, "/ref_msh_dis_clu.tsv.gz", sep="")) %>%
+  dis_ref <- read_tsv(paste(ref_d, "/ref_msh_dis_clu.tsv.gz", sep=""), col_types="ccddddccc") %>%
     filter(ref_id != met_id) %>%
     filter(met_cluster == clu) %>%
     mutate(method="mash",

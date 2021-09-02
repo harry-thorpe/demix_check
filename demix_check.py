@@ -202,6 +202,9 @@ if mode_run:
                 binned_reads_d="{}/binned_reads".format(out_dr)
                 msweep_abun="{}/msweep_abundances.txt".format(out_dr)
                 
+                if not os.path.isdir(out_dr):
+                    os.makedirs(out_dr)
+
                 ref_clu="{}/ref_clu.tsv".format(ref_d)
                 ref_msh="{}/ref.msh".format(ref_d)
                 rr12="{} {}".format(rr1, rr2)

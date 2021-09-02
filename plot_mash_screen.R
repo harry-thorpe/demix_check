@@ -17,7 +17,7 @@ out_f=paste(out_d, "/mash_screen_check_plot.pdf", sep="")
 
 ref=basename(ref_d)
 
-dis_ref <- read_tsv(paste(ref_d, "/ref_msh_dis_clu.tsv.gz", sep="")) %>%
+dis_ref <- read_tsv(paste(ref_d, "/ref_msh_dis_clu.tsv.gz", sep=""), col_types="ccddddccc") %>%
   filter(ref_id != met_id) %>%
   mutate(method="mash",
          comparison="ref_ref",

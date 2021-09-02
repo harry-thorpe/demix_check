@@ -47,6 +47,7 @@ def run_mash_dist(mash_exec, t, ref_file, query_file, out_file):
 
     data=pd.read_csv(out_file_tmp, sep="\t", names=["ref_id", "met_id", "distance", "p", "hashes"], dtype={'ref_id': 'str', 'met_id': 'str'})
     data[["hashes", "ss"]]=data.hashes.str.split('/', expand=True)
+    data["distance"]=np.where(data["distance"] < 0.5, data["distance"], 0.5)
     data=data[["ref_id", "met_id", "distance", "hashes", "ss", "p"]]
     data.to_csv(out_file, sep="\t", index=False)
 
@@ -65,6 +66,7 @@ def run_mash_screen(mash_exec, t, ref_file, query_file, out_file, met_id):
     data=pd.read_csv(out_file_tmp, sep="\t", names=["distance", "hashes", "coverage", "p", "ref_id", "TMP"], dtype={'ref_id': 'str'})
     data[["hashes", "ss"]]=data.hashes.str.split('/', expand=True)
     data["distance"]=1-data["distance"]
+    data["distance"]=np.where(data["distance"] < 0.5, data["distance"], 0.5)
     data["met_id"]=met_id
     data=data[["ref_id", "met_id", "distance", "hashes", "ss", "p", "coverage"]]
     data.to_csv(out_file, sep="\t", index=False)
