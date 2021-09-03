@@ -226,6 +226,7 @@ if mode_run:
 
                 # check the mGEMS bins
                 check_mGEMS(mash_exec, seqtk_exec, t, ss, min_abun, ref_d, out_dr, binned_reads_d, msweep_abun)
+                
                 if plots:
                     sys.stderr.write("Plotting output...\n")
                     plot_cmd="Rscript {}/plot_sample_single.R {} {}".format(dir_path, out_dr, ref_d)

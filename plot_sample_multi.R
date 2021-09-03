@@ -138,15 +138,16 @@ h <- n_l0*l0_rows
 w <- l0_rows+l1_cols
 
 p_all <- ggdraw() +
-  draw_line(x=c(l0_cols/w, l0_cols/w), y=c(0.01, 0.99), linetype="dashed", colour="red") +
-  draw_plot_label(label=c("level 0", "level 1"), x=c(0, l0_cols/w), y=c(1, 1)) +
   draw_plot(plot_grid(plotlist=pl_l0, ncol=1), 0, 0, l0_cols/w, 1)
 
 for(i in 1:n_l0){
   p_all <- p_all + draw_plot(plot_grid(plotlist=pl_l1[[i]], nrow=l1_rows, byrow=FALSE), l0_cols/w, 1-(i*l1_rows/h), l1_cols/w, l1_rows/h)
 }
 
-pdf(out_f, height=h*3*1.25, width=w*3)
+p_all <- p_all +
+  draw_line(x=c(l0_cols/w, l0_cols/w), y=c(0.01, 0.99), linetype="dashed", colour="red")
+
+pdf(out_f, height=h*3, width=w*3)
 
 plot(p_all)
 
