@@ -16,27 +16,45 @@ out_f <- paste(out_d, "/summary_plot.pdf", sep="")
 
 summary_f=paste(out_d, "/clu_out_summary.tsv", sep="")
 
-summary <- read_tsv(summary_f)
+summary <- read_tsv(summary_f) %>%
+  filter(read_count > 0)
 
-summary_l0 <- summary %>%
-  filter(level == 0) %>%
-  arrange(score, desc(abundance), cluster) %>%
-  group_by(ref) %>%
-  mutate(l0_idx=1:n()) %>%
-  ungroup()
+if(nrow(summary %>% filter(level == 0)) > 0){
+  summary_l0 <- summary %>%
+    filter(level == 0) %>%
+    arrange(score, desc(abundance), cluster) %>%
+    group_by(ref) %>%
+    mutate(l0_idx=1:n()) %>%
+    ungroup()
+  
+  n_l0 <- max(summary_l0$l0_idx)
+}else{
+  summary_l0 <- summary %>%
+    filter(level == 0)
 
-summary_l1 <- summary %>%
-  filter(level == 1) %>%
-  left_join(., summary_l0 %>% select(cluster, l0_idx), by=c("ref"="cluster")) %>%
-  arrange(l0_idx, score, desc(abundance)) %>%
-  group_by(ref) %>%
-  mutate(l1_idx=1:n()) %>%
-  ungroup()
+  n_l0 <- 0
+}
+
+if(nrow(summary %>% filter(level == 1)) > 0){
+  summary_l1 <- summary %>%
+    filter(level == 1) %>%
+    left_join(., summary_l0 %>% select(cluster, l0_idx), by=c("ref"="cluster")) %>%
+    arrange(l0_idx, score, desc(abundance)) %>%
+    group_by(ref) %>%
+    mutate(l1_idx=1:n()) %>%
+    ungroup()
+
+  n_l1 <- max(summary_l1$l1_idx)
+}else{
+  summary_l1 <- summary %>%
+    filter(level == 1)
+
+  n_l1 <- 0
+}
 
 summary_l01 <- bind_rows(summary_l0, summary_l1)
 
-n_l0 <- max(summary_l0$l0_idx)
-n_l1 <- max(summary_l1$l1_idx)
+if(nrow(summary_l01) > 0){
 
 pl_l0 <- vector(mode="list", length=n_l0)
 
@@ -152,3 +170,5 @@ pdf(out_f, height=h*3, width=w*3)
 plot(p_all)
 
 dev.off()
+
+}

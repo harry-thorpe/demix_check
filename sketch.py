@@ -60,7 +60,7 @@ def run_mash_screen(mash_exec, t, ref_file, query_file, out_file, met_id):
 
     out_file_tmp="{}.tmp.gz".format(out_file)
 
-    mash_cmd="{} screen -p {} {} {} | gzip > {}".format(mash_exec, t, ref_file, query_file, out_file_tmp)
+    mash_cmd="{} screen -p {} -i -1 {} {} | gzip > {}".format(mash_exec, t, ref_file, query_file, out_file_tmp)
     std_result=subprocess.run(mash_cmd, shell=True, check=True, capture_output=True, text=True)
 
     data=pd.read_csv(out_file_tmp, sep="\t", names=["distance", "hashes", "coverage", "p", "ref_id", "TMP"], dtype={'ref_id': 'str'})

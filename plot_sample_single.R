@@ -18,10 +18,19 @@ out_f <- paste(out_d, "/sample_plot.pdf", sep="")
 summary_f=paste(out_d, "/clu_score.tsv", sep="")
 
 summary <- read_tsv(summary_f) %>%
-  arrange(score, desc(abundance), cluster) %>%
-  mutate(idx=1:n())
+  filter(read_count > 0)
 
-n <- max(summary$idx)
+if(nrow(summary) > 0){
+  summary <- summary %>%
+    arrange(score, desc(abundance), cluster) %>%
+    mutate(idx=1:n())
+
+  n <- max(summary$idx)
+}else{
+  n <- 0
+}
+
+if(nrow(summary) > 0){
 
 pl <- vector(mode="list", length=n)
 
@@ -109,3 +118,4 @@ plot(p_all)
 
 dev.off()
 
+}
