@@ -3,6 +3,7 @@
 import os
 import sys
 import subprocess
+import shutil
 
 import re
 import pandas as pd
@@ -14,12 +15,15 @@ def run_mGEMS(themisto_align_exec, mSWEEP_exec, mGEMS_exec, t, min_abun, r1, r2,
     ref_idx="{}/ref_idx".format(ref_d)
     ref=os.path.basename(ref_d)
     out=os.path.basename(out_d)
+    tmp_out_d="{}/tmp".format(out_d)
 
     if not os.path.isdir(out_d):
         os.makedirs(out_d)
     if not os.path.isdir(out_d_bin):
         os.makedirs(out_d_bin)
-    
+    if not os.path.isdir(tmp_out_d):
+        os.makedirs(tmp_out_d)
+
     log=open("{}/run.log".format(out_d), 'w')
 
     ref_clu="{}/ref_clu.txt".format(ref_d)
@@ -32,12 +36,12 @@ def run_mGEMS(themisto_align_exec, mSWEEP_exec, mGEMS_exec, t, min_abun, r1, r2,
     msweep_abun_prob="{}/msweep_probs.csv.gz".format(out_d)
     
     sys.stderr.write("Pseudoaligning r1 reads with themisto...\n")
-    themisto_cmd="{} --index-dir {} --query-file {} --outfile {} --rc --temp-dir {}/tmp --n-threads {} --sort-output --gzip-output".format(themisto_align_exec, ref_idx, r1, r_ali1_p, ref_idx, t)
+    themisto_cmd="{} --index-dir {} --query-file {} --outfile {} --rc --temp-dir {} --n-threads {} --sort-output --gzip-output".format(themisto_align_exec, ref_idx, r1, r_ali1_p, tmp_out_d, t)
     std_result=subprocess.run(themisto_cmd, shell=True, check=True, capture_output=True, text=True)
     log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
     
     sys.stderr.write("Pseudoaligning r2 reads with themisto...\n")
-    themisto_cmd="{} --index-dir {} --query-file {} --outfile {} --rc --temp-dir {}/tmp --n-threads {} --sort-output --gzip-output".format(themisto_align_exec, ref_idx, r2, r_ali2_p, ref_idx, t)
+    themisto_cmd="{} --index-dir {} --query-file {} --outfile {} --rc --temp-dir {} --n-threads {} --sort-output --gzip-output".format(themisto_align_exec, ref_idx, r2, r_ali2_p, tmp_out_d, t)
     std_result=subprocess.run(themisto_cmd, shell=True, check=True, capture_output=True, text=True)
     log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
     
@@ -71,6 +75,7 @@ def run_mGEMS(themisto_align_exec, mSWEEP_exec, mGEMS_exec, t, min_abun, r1, r2,
         os.remove(msweep_abun_prob)
         os.remove(r_ali1)
         os.remove(r_ali2)
+        shutil.rmtree(tmp_out_d)
     
     sys.stderr.write("mSWEEP/mGEMS pipeline on {},{} completed\n".format(r1, r2))
 
