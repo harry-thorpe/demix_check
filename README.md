@@ -48,6 +48,7 @@ Setup arguments:
                         proportion of median divergence between clusters to set minimum threshold to [default = 0.2]
   --thr_abs_min  THR_ABS_MIN
                         absolute minimum threshold [default = not set] [overrides --thr_prop_min]
+  --no_build_index      Skip building the themisto index [default = False]
 
 Check arguments:
   Arguments for check mode
@@ -73,6 +74,8 @@ General arguments:
   --threads THREADS     number of threads to use [default = 1]
   --keep                keep large intermediate files [default = off]
   -h, --help            show this help message and exit
+  --themisto_index THEMISTO_INDEX
+                        path to the themisto index directory [default = ref_idx in --ref]
 ```
 
 ## Modes

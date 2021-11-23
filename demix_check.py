@@ -43,6 +43,7 @@ setup_group.add_argument('--redo_thr', action="store_true", default=False, help=
 setup_group.add_argument('--thr_prop_exp', type=float, default=0.2, help='proportion of maximum divergence within a cluster to expand the threshold by [default = %(default)s]')
 setup_group.add_argument('--thr_prop_min', type=float, default=0.2, help='proportion of median divergence between clusters to set minimum threshold to [default = %(default)s]')
 setup_group.add_argument('--thr_abs_min', type=float, help='absolute minimum threshold [default = not set] [overrides --thr_prop_min]')
+setup_group.add_argument('--no_build_index', action="store_true", default=False, help='Skip building the themisto index [default = %(default)s]')
 
 # args specific to check mode
 check_group=parser.add_argument_group('Check arguments', 'Arguments for check mode')
@@ -64,6 +65,7 @@ general_group.add_argument('--plots', action="store_true", default=False, help='
 general_group.add_argument('--threads', type=int, default=1, help='number of threads to use [default = %(default)d]')
 general_group.add_argument('--keep', action="store_true", default=False, help='keep large intermediate files [default = off]')
 general_group.add_argument('-h', '--help', action='help', help="show this help message and exit")
+general_group.add_argument('--themisto_index', type=str, required='--mode_check' in sys.argv, help='path to the themisto index directory [default = ref_idx in --ref]')
 
 # set up arg vars
 args=parser.parse_args()
@@ -76,6 +78,7 @@ redo_thr=args.redo_thr
 thr_prop_exp=args.thr_prop_exp
 thr_prop_min=args.thr_prop_min
 thr_abs_min=args.thr_abs_min
+no_build_index=args.no_build_index
 
 binned_reads_d=args.binned_reads_dir
 msweep_abun=args.msweep_abun
@@ -85,6 +88,10 @@ r2=args.r2
 
 out_d=args.out_dir
 ref_in=args.ref
+if not args.themisto_index:
+    themisto_index="{}/ref_idx".format(ref_in)
+else:
+    themisto_index=args.themisto_index
 min_abun=args.min_abun
 ss=args.sketch_size
 t=args.threads
@@ -139,7 +146,7 @@ if mode_setup:
     for ref_d in ref_ds:
         if os.path.isdir(ref_d) and os.path.isfile("{}/ref_info.tsv".format(ref_d)):
             
-            setup_reference(mash_exec, themisto_build_exec, seqtk_exec, ref_d, t, ss, thr_prop_min, thr_abs_min, thr_prop_exp, redo_thr)
+            setup_reference(mash_exec, themisto_build_exec, seqtk_exec, ref_d, t, ss, thr_prop_min, thr_abs_min, thr_prop_exp, redo_thr, no_build_index)
             
             if plots:
                 sys.stderr.write("Plotting output...\n")
@@ -222,10 +229,10 @@ if mode_run:
                     subprocess.run(plot_cmd, shell=True, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
                 # run the mSWEEP/mGEMS pipeline
-                run_mGEMS(themisto_align_exec, mSWEEP_exec, mGEMS_exec, t, min_abun, rr1, rr2, ref_d, out_dr, binned_reads_d, msweep_abun, keep)
+                run_mGEMS(themisto_align_exec, mSWEEP_exec, mGEMS_exec, t, min_abun, rr1, rr2, ref_d, out_dr, binned_reads_d, msweep_abun, keep, themisto_index)
 
                 # check the mGEMS bins
-                check_mGEMS(mash_exec, seqtk_exec, t, ss, min_abun, ref_d, out_dr, binned_reads_d, msweep_abun)
+                check_mGEMS(mash_exec, seqtk_exec, t, ss, min_abun, ref_d, out_dr, binned_reads_d, msweep_abun, themisto_index)
                 
                 if plots:
                     sys.stderr.write("Plotting output...\n")

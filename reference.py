@@ -11,7 +11,7 @@ import numpy as np
 
 from sketch import *
 
-def setup_reference(mash_exec, themisto_build_exec, seqtk_exec, d, t, ss, thr_prop_min, thr_abs_min, thr_prop_exp, redo_thr):
+def setup_reference(mash_exec, themisto_build_exec, seqtk_exec, d, t, ss, thr_prop_min, thr_abs_min, thr_prop_exp, redo_thr, no_build_index):
     sys.stderr.write("Setting up reference set {}...\n".format(d))
 
     seq_info_f="{}/ref_info.tsv".format(d)
@@ -75,22 +75,23 @@ def setup_reference(mash_exec, themisto_build_exec, seqtk_exec, d, t, ss, thr_pr
         
         sys.stderr.write("Calculating thresholds...\n")
         get_thresholds(clu_out, msh_dis_clu_out, thr_prop_min, thr_abs_min, thr_prop_exp, clu_thr_out)
-    
-        idx_d="{}/ref_idx".format(d)
-        idx_d_tmp="{}/ref_idx/tmp".format(d)
 
-        if not os.path.isdir(idx_d):
-            os.makedirs(idx_d)
+        if not no_build_index:
+            idx_d="{}/ref_idx".format(d)
+            idx_d_tmp="{}/ref_idx/tmp".format(d)
+
+            if not os.path.isdir(idx_d):
+                os.makedirs(idx_d)
     
-        if not os.path.isdir(idx_d_tmp):
-            os.makedirs(idx_d_tmp)
+            if not os.path.isdir(idx_d_tmp):
+                os.makedirs(idx_d_tmp)
         
-        sys.stderr.write("Indexing reference set...\n")
-        themisto_cmd="{} --k 31 --n-threads {} --input-file {} --auto-colors --index-dir {} --temp-dir {}".format(themisto_build_exec, t, fa_out, idx_d, idx_d_tmp)
-        std_result=subprocess.run(themisto_cmd, shell=True, check=True, capture_output=True, text=True)
-        log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
+            sys.stderr.write("Indexing reference set...\n")
+            themisto_cmd="{} --k 31 --n-threads {} --input-file {} --auto-colors --index-dir {} --temp-dir {}".format(themisto_build_exec, t, fa_out, idx_d, idx_d_tmp)
+            std_result=subprocess.run(themisto_cmd, shell=True, check=True, capture_output=True, text=True)
+            log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
         
-        sys.stderr.write("Reference set {} setup completed\n".format(d))
+            sys.stderr.write("Reference set {} setup completed\n".format(d))
 
         log.close()
 
