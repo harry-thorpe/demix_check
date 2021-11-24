@@ -65,7 +65,7 @@ general_group.add_argument('--plots', action="store_true", default=False, help='
 general_group.add_argument('--threads', type=int, default=1, help='number of threads to use [default = %(default)d]')
 general_group.add_argument('--keep', action="store_true", default=False, help='keep large intermediate files [default = off]')
 general_group.add_argument('-h', '--help', action='help', help="show this help message and exit")
-general_group.add_argument('--themisto_index', type=str, required='--mode_check' in sys.argv, help='path to the themisto index directory [default = ref_idx in --ref]')
+general_group.add_argument('--themisto_index', type=str, help='path to the themisto index directory [default = ref_idx in --ref]')
 
 # set up arg vars
 args=parser.parse_args()
