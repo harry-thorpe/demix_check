@@ -26,7 +26,7 @@ with the commands
 ```
 conda create -n demix_check
 conda activate demix_check
-conda install -c anaconda -c bioconda -c conda-forge numpy pandas seqtk mash r-tidyverse r-cowplot
+conda install -y -c anaconda -c conda-forge -c bioconda numpy=1.21.4 pandas=1.3.4 seqtk=1.3 mash=2.3 r-tidyverse=1.3.1 r-cowplot=1.1.1
 ```
 
 The following dependencies need to be installed according to the
