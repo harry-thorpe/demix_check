@@ -32,11 +32,9 @@ conda install -c anaconda -c bioconda -c conda-forge numpy pandas seqtk mash r-t
 The following dependencies need to be installed according to the
 instructions in their repositories:
 
-```
 * build_index and pseudoalign (from [themisto](https://github.com/algbio/themisto/))
 * [mSWEEP](https://github.com/PROBIC/mSWEEP)
 * [mGEMS](https://github.com/PROBIC/mGEMS)
-```
 
 ## Running the pipeline
 
