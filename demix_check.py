@@ -54,6 +54,7 @@ check_group.add_argument('--msweep_abun', type=str, required='--mode_check' in s
 run_group=parser.add_argument_group('Run arguments', 'Arguments for run mode')
 run_group.add_argument('--r1', type=str, required='--mode_run' in sys.argv, help='r1 file')
 run_group.add_argument('--r2', type=str, required='--mode_run' in sys.argv, help='r2 file')
+run_group.add_argument('--themisto_index', type=str, help='path to the themisto index directory [default = ref_idx in --ref]')
 
 # general args
 general_group=parser.add_argument_group('General arguments')
@@ -65,7 +66,6 @@ general_group.add_argument('--plots', action="store_true", default=False, help='
 general_group.add_argument('--threads', type=int, default=1, help='number of threads to use [default = %(default)d]')
 general_group.add_argument('--keep', action="store_true", default=False, help='keep large intermediate files [default = off]')
 general_group.add_argument('-h', '--help', action='help', help="show this help message and exit")
-general_group.add_argument('--themisto_index', type=str, help='path to the themisto index directory [default = ref_idx in --ref]')
 
 # set up arg vars
 args=parser.parse_args()
@@ -232,7 +232,7 @@ if mode_run:
                 run_mGEMS(themisto_align_exec, mSWEEP_exec, mGEMS_exec, t, min_abun, rr1, rr2, ref_d, out_dr, binned_reads_d, msweep_abun, keep, themisto_index)
 
                 # check the mGEMS bins
-                check_mGEMS(mash_exec, seqtk_exec, t, ss, min_abun, ref_d, out_dr, binned_reads_d, msweep_abun, themisto_index)
+                check_mGEMS(mash_exec, seqtk_exec, t, ss, min_abun, ref_d, out_dr, binned_reads_d, msweep_abun)
                 
                 if plots:
                     sys.stderr.write("Plotting output...\n")

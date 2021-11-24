@@ -87,7 +87,8 @@ Run arguments:
 
   --r1 R1               r1 file
   --r2 R2               r2 file
-
+  --themisto_index THEMISTO_INDEX
+                        path to the themisto index directory [default = ref_idx in --ref]
 General arguments:
   --out_dir OUT_DIR     output directory
   --ref REF             reference set/s to use [either a string specifying the path to the reference directory or a file containing paths to the reference directories]
@@ -98,8 +99,6 @@ General arguments:
   --threads THREADS     number of threads to use [default = 1]
   --keep                keep large intermediate files [default = off]
   -h, --help            show this help message and exit
-  --themisto_index THEMISTO_INDEX
-                        path to the themisto index directory [default = ref_idx in --ref]
 ```
 
 ## Modes
