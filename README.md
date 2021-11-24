@@ -12,6 +12,32 @@ This pipeline assess the demixed binned reads from an mGEMS analysis to help wit
 * mash
 * seqtk
 
+## Installation
+
+The following depdendencies can be installed using conda
+
+* python3 with numpy and pandas
+* R with tidyverse and cowplot (for plotting)
+* mash
+* seqtk
+
+with the commands
+
+```
+conda create -n demix_check
+conda activate demix_check
+conda install -c anaconda -c bioconda -c conda-forge numpy pandas seqtk mash r-tidyverse r-cowplot
+```
+
+The following dependencies need to be installed according to the
+instructions in their repositories:
+
+```
+* build_index and pseudoalign (from [themisto](https://github.com/algbio/themisto/))
+* [mSWEEP](https://github.com/PROBIC/mSWEEP)
+* [mGEMS](https://github.com/PROBIC/mGEMS)
+```
+
 ## Running the pipeline
 
 Clone the repository with:
