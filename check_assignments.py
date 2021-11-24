@@ -10,10 +10,9 @@ import numpy as np
 
 from sketch import *
 
-def check_mGEMS(mash_exec, seqtk_exec, t, ss, min_abun, ref_d, out_d, binned_reads_d, msweep_abun, themisto_index):
+def check_mGEMS(mash_exec, seqtk_exec, t, ss, min_abun, ref_d, out_d, binned_reads_d, msweep_abun):
     sys.stderr.write("Checking analysis {} against reference set {}...\n".format(binned_reads_d, ref_d))
 
-    ref_idx=themisto_index
     ref_clu="{}/ref_clu.tsv".format(ref_d)
     ref=os.path.basename(ref_d)
     out=os.path.basename(out_d)
