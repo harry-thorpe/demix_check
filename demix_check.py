@@ -44,6 +44,7 @@ setup_group.add_argument('--thr_prop_exp', type=float, default=0.2, help='propor
 setup_group.add_argument('--thr_prop_min', type=float, default=0.2, help='proportion of median divergence between clusters to set minimum threshold to [default = %(default)s]')
 setup_group.add_argument('--thr_abs_min', type=float, help='absolute minimum threshold [default = not set] [overrides --thr_prop_min]')
 setup_group.add_argument('--no_build_index', action="store_true", default=False, help='Skip building the themisto index [default = %(default)s]')
+setup_group.add_argument('--no_build_fasta', action="store_true", default=False, help='Skip building the fasta file for the themisto index [default = %(default)s]')
 
 # args specific to check mode
 check_group=parser.add_argument_group('Check arguments', 'Arguments for check mode')
@@ -79,6 +80,7 @@ thr_prop_exp=args.thr_prop_exp
 thr_prop_min=args.thr_prop_min
 thr_abs_min=args.thr_abs_min
 no_build_index=args.no_build_index
+no_build_fasta=args.no_build_fasta
 
 binned_reads_d=args.binned_reads_dir
 msweep_abun=args.msweep_abun
@@ -146,7 +148,7 @@ if mode_setup:
     for ref_d in ref_ds:
         if os.path.isdir(ref_d) and os.path.isfile("{}/ref_info.tsv".format(ref_d)):
             
-            setup_reference(mash_exec, themisto_build_exec, seqtk_exec, ref_d, t, ss, thr_prop_min, thr_abs_min, thr_prop_exp, redo_thr, no_build_index)
+            setup_reference(mash_exec, themisto_build_exec, seqtk_exec, ref_d, t, ss, thr_prop_min, thr_abs_min, thr_prop_exp, redo_thr, no_build_index, no_build_fasta)
             
             if plots:
                 sys.stderr.write("Plotting output...\n")
