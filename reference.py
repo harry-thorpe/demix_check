@@ -159,7 +159,7 @@ def get_comp(seqtk_exec, in_clu, in_fa, out_file, out_file_summary, seq_info, no
             std_result=subprocess.run(setup_cmd, shell=True, stdout=outfile)
             for i in range(seq_count):
                 assembly=seq_info["assembly"][i]
-                seqtk_cmd="{} comp {} | cut -f2-13".format(seqtk_exec, assembly)
+                seqtk_cmd="{} comp {} | cut -f2-13 | awk '{for(i=1;i<=NF;i++)$i=(a[i]+=$i)}END{print}'".format(seqtk_exec, assembly)
                 std_result=subprocess.run(seqtk_cmd, shell=True, check=True, text=True, stdout=outfile)
     else:
         seqtk_cmd="{} comp {} >> {}".format(seqtk_exec, in_fa, out_file)
