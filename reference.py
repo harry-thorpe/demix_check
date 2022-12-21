@@ -155,21 +155,22 @@ def get_comp(seqtk_exec, in_clu, in_fa, out_file, out_file_summary, seq_info, no
     if no_build_fasta:
         seq_count=len(seq_info)
         with open(out_file, "w") as outfile:
-            setup_cmd="echo \"length\t#A\t#C\t#G\t#T\t#2\t#3\t#4\t#CpG\t#tv\t#ts\t#CpG-ts\""
+            setup_cmd="echo \"length #A #C #G #T #2 #3 #4 #CpG #tv #ts #CpG-ts\""
             std_result=subprocess.run(setup_cmd, shell=True, stdout=outfile)
             for i in range(seq_count):
                 assembly=seq_info["assembly"][i]
-                seqtk_cmd="{} comp {} | cut -f2-13 | awk '{for(i=1;i<=NF;i++)$i=(a[i]+=$i)}END{print}'".format(seqtk_exec, assembly)
+                seqtk_cmd="{} comp {} | cut -f2-13 | awk -F \"[[:space:]]\" '{{for(i=1;i<=NF;i++)$i=(a[i]+=$i)}}END{{print}}'".format(seqtk_exec, assembly)
                 std_result=subprocess.run(seqtk_cmd, shell=True, check=True, text=True, stdout=outfile)
     else:
         seqtk_cmd="{} comp {} >> {}".format(seqtk_exec, in_fa, out_file)
         std_result=subprocess.run(seqtk_cmd, shell=True, check=True, capture_output=True, text=True)
 
-    lens=pd.read_csv(out_file, sep="\t", dtype={'id': 'str'})
+    lens=pd.read_csv(out_file, sep=" ", dtype={'id': 'str'})
     lens[["id"]] = seq_info[["id"]]
     lens.to_csv(out_file, sep='\t', index=False)
     lens=lens[["id", "length"]]
 
+    print(lens)
     clu_lens=clu.merge(lens, how="left", on="id")
     clu_lens=clu_lens.groupby("cluster", as_index=False).agg(
             n=("id", "count"),
