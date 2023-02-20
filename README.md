@@ -12,6 +12,30 @@ This pipeline assess the demixed binned reads from an mGEMS analysis to help wit
 * mash
 * seqtk
 
+## Installation
+
+The following depdendencies can be installed using conda
+
+* python3 with numpy and pandas
+* R with tidyverse and cowplot (for plotting)
+* mash
+* seqtk
+
+with the commands
+
+```
+conda create -n demix_check
+conda activate demix_check
+conda install -y -c anaconda -c conda-forge -c bioconda numpy=1.21.4 pandas=1.3.4 seqtk=1.3 mash=2.3 r-tidyverse=1.3.1 r-cowplot=1.1.1
+```
+
+The following dependencies need to be installed according to the
+instructions in their repositories:
+
+* build_index and pseudoalign (from [themisto](https://github.com/algbio/themisto/))
+* [mSWEEP](https://github.com/PROBIC/mSWEEP)
+* [mGEMS](https://github.com/PROBIC/mGEMS)
+
 ## Running the pipeline
 
 Clone the repository with:
@@ -48,6 +72,7 @@ Setup arguments:
                         proportion of median divergence between clusters to set minimum threshold to [default = 0.2]
   --thr_abs_min  THR_ABS_MIN
                         absolute minimum threshold [default = not set] [overrides --thr_prop_min]
+  --no_build_index      Skip building the themisto index [default = False]
 
 Check arguments:
   Arguments for check mode
@@ -62,7 +87,8 @@ Run arguments:
 
   --r1 R1               r1 file
   --r2 R2               r2 file
-
+  --themisto_index THEMISTO_INDEX
+                        path to the themisto index directory [default = ref_idx in --ref]
 General arguments:
   --out_dir OUT_DIR     output directory
   --ref REF             reference set/s to use [either a string specifying the path to the reference directory or a file containing paths to the reference directories]

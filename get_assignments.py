@@ -9,10 +9,10 @@ import re
 import pandas as pd
 import numpy as np
 
-def run_mGEMS(themisto_align_exec, mSWEEP_exec, mGEMS_exec, t, min_abun, r1, r2, ref_d, out_d, out_d_bin, msweep_abun, keep):
+def run_mGEMS(themisto_align_exec, mSWEEP_exec, mGEMS_exec, t, min_abun, r1, r2, ref_d, out_d, out_d_bin, msweep_abun, keep, themisto_index):
     sys.stderr.write("Running mSWEEP/mGEMS pipeline on {},{} against reference set {}...\n".format(r1, r2, ref_d))
 
-    ref_idx="{}/ref_idx".format(ref_d)
+    ref_idx=themisto_index
     ref=os.path.basename(ref_d)
     out=os.path.basename(out_d)
     tmp_out_d="{}/tmp".format(out_d)

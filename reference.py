@@ -11,7 +11,7 @@ import numpy as np
 
 from sketch import *
 
-def setup_reference(mash_exec, themisto_build_exec, seqtk_exec, d, t, ss, thr_prop_min, thr_abs_min, thr_prop_exp, redo_thr):
+def setup_reference(mash_exec, themisto_build_exec, seqtk_exec, d, t, ss, thr_prop_min, thr_abs_min, thr_prop_exp, redo_thr, no_build_index, no_build_fasta):
     sys.stderr.write("Setting up reference set {}...\n".format(d))
 
     seq_info_f="{}/ref_info.tsv".format(d)
@@ -27,6 +27,7 @@ def setup_reference(mash_exec, themisto_build_exec, seqtk_exec, d, t, ss, thr_pr
     clu_out="{}/ref_clu.tsv".format(d)
     comp_out="{}/ref_comp.tsv".format(d)
     clu_comp_out="{}/ref_clu_comp.tsv".format(d)
+    paths_out="{}/ref_paths.txt".format(d)
 
     if redo_thr == True:
         
@@ -36,37 +37,45 @@ def setup_reference(mash_exec, themisto_build_exec, seqtk_exec, d, t, ss, thr_pr
     else:
         log=open("{}/ref.log".format(d), 'w')
         
-        sys.stderr.write("Creating multifasta...\n")
-        fo=gzip.open(fa_out, 'wt')
-        for i in range(seq_count):
-            seq_id=seq_info["id"][i]
-            cluster=seq_info["cluster"][i]
-            assembly=seq_info["assembly"][i]
+        if not no_build_fasta:
+            sys.stderr.write("Creating multifasta...\n")
+            fo=gzip.open(fa_out, 'wt')
+            for i in range(seq_count):
+                seq_id=seq_info["id"][i]
+                cluster=seq_info["cluster"][i]
+                assembly=seq_info["assembly"][i]
 
-            fo.write(">{}\n".format(seq_id))
-            
-            if assembly.endswith('.gz'):
-                f_tmp=gzip.open(assembly, 'rt')
-            else:
-                f_tmp=open(assembly, 'r')
-            for l in f_tmp:
-                if not re.match(r'^>', l):
-                    fo.write(l)
-            f_tmp.close()
-        fo.close()
+                fo.write(">{}\n".format(seq_id))
+
+                if assembly.endswith('.gz'):
+                    f_tmp=gzip.open(assembly, 'rt')
+                else:
+                    f_tmp=open(assembly, 'r')
+                    for l in f_tmp:
+                        if not re.match(r'^>', l):
+                            fo.write(l)
+                    f_tmp.close()
+            fo.close()
 
         clu_m=seq_info[["cluster"]]
         clu_m.to_csv(clu_out_m, sep="\t", index=False, header=None)
 
         clu=seq_info[["id", "cluster"]]
         clu.to_csv(clu_out, sep="\t", index=False)
-        
-        get_comp(seqtk_exec, clu_out, fa_out, comp_out, clu_comp_out)
+
+        paths=seq_info[["assembly"]]
+        paths.to_csv(paths_out, sep="\t", index=False, header=False)
+
+        get_comp(seqtk_exec, clu_out, fa_out, comp_out, clu_comp_out, seq_info, no_build_fasta)
 
         sys.stderr.write("Creating mash sketches...\n")
-        std_result=run_mash_sketch(mash_exec, t, fa_out, msh_out, ss, m=None, in_type="fa")
-        log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
-        
+        if not no_build_fasta:
+            std_result=run_mash_sketch(mash_exec, t, fa_out, msh_out, ss, m=None, in_type="fa")
+            log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
+        else:
+            std_result=run_mash_sketch(mash_exec, t, paths_out, msh_out, ss, m=None, in_type="list")
+            log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
+
         sys.stderr.write("Calculating mash distances...\n")
         std_result=run_mash_dist(mash_exec, t, msh_out, msh_out, msh_dis_out)
         log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
@@ -75,22 +84,23 @@ def setup_reference(mash_exec, themisto_build_exec, seqtk_exec, d, t, ss, thr_pr
         
         sys.stderr.write("Calculating thresholds...\n")
         get_thresholds(clu_out, msh_dis_clu_out, thr_prop_min, thr_abs_min, thr_prop_exp, clu_thr_out)
-    
-        idx_d="{}/ref_idx".format(d)
-        idx_d_tmp="{}/ref_idx/tmp".format(d)
 
-        if not os.path.isdir(idx_d):
-            os.makedirs(idx_d)
+        if not no_build_index:
+            idx_d="{}/ref_idx".format(d)
+            idx_d_tmp="{}/ref_idx/tmp".format(d)
+
+            if not os.path.isdir(idx_d):
+                os.makedirs(idx_d)
     
-        if not os.path.isdir(idx_d_tmp):
-            os.makedirs(idx_d_tmp)
+            if not os.path.isdir(idx_d_tmp):
+                os.makedirs(idx_d_tmp)
         
-        sys.stderr.write("Indexing reference set...\n")
-        themisto_cmd="{} --k 31 --n-threads {} --input-file {} --auto-colors --index-dir {} --temp-dir {}".format(themisto_build_exec, t, fa_out, idx_d, idx_d_tmp)
-        std_result=subprocess.run(themisto_cmd, shell=True, check=True, capture_output=True, text=True)
-        log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
+            sys.stderr.write("Indexing reference set...\n")
+            themisto_cmd="{} --k 31 --n-threads {} --input-file {} --auto-colors --index-dir {} --temp-dir {}".format(themisto_build_exec, t, fa_out, idx_d, idx_d_tmp)
+            std_result=subprocess.run(themisto_cmd, shell=True, check=True, capture_output=True, text=True)
+            log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
         
-        sys.stderr.write("Reference set {} setup completed\n".format(d))
+            sys.stderr.write("Reference set {} setup completed\n".format(d))
 
         log.close()
 
@@ -137,18 +147,30 @@ def get_thresholds(in_clu, in_dis, thr_prop_min, thr_abs_min, thr_prop_exp, out_
 
     t_summary.to_csv(out_file, sep="\t", index=False)
 
-def get_comp(seqtk_exec, in_clu, in_fa, out_file, out_file_summary):
+def get_comp(seqtk_exec, in_clu, in_fa, out_file, out_file_summary, seq_info, no_build_fasta):
     
     clu=pd.read_csv(in_clu, sep="\t", dtype={'id': 'str'})
     
-    setup_cmd="echo \"id\tlength\t#A\t#C\t#G\t#T\t#2\t#3\t#4\t#CpG\t#tv\t#ts\t#CpG-ts\" > {}".format(out_file)
-    std_result=subprocess.run(setup_cmd, shell=True, check=True, capture_output=True, text=True)
-    seqtk_cmd="{} comp {} >> {}".format(seqtk_exec, in_fa, out_file)
-    std_result=subprocess.run(seqtk_cmd, shell=True, check=True, capture_output=True, text=True)
 
-    lens=pd.read_csv(out_file, sep="\t", dtype={'id': 'str'})
+    if no_build_fasta:
+        seq_count=len(seq_info)
+        with open(out_file, "w") as outfile:
+            setup_cmd="echo \"length #A #C #G #T #2 #3 #4 #CpG #tv #ts #CpG-ts\""
+            std_result=subprocess.run(setup_cmd, shell=True, stdout=outfile)
+            for i in range(seq_count):
+                assembly=seq_info["assembly"][i]
+                seqtk_cmd="{} comp {} | cut -f2-13 | awk -F \"[[:space:]]\" '{{for(i=1;i<=NF;i++)$i=(a[i]+=$i)}}END{{print}}'".format(seqtk_exec, assembly)
+                std_result=subprocess.run(seqtk_cmd, shell=True, check=True, text=True, stdout=outfile)
+    else:
+        seqtk_cmd="{} comp {} >> {}".format(seqtk_exec, in_fa, out_file)
+        std_result=subprocess.run(seqtk_cmd, shell=True, check=True, capture_output=True, text=True)
+
+    lens=pd.read_csv(out_file, sep=" ", dtype={'id': 'str'})
+    lens[["id"]] = seq_info[["id"]]
+    lens.to_csv(out_file, sep='\t', index=False)
     lens=lens[["id", "length"]]
 
+    print(lens)
     clu_lens=clu.merge(lens, how="left", on="id")
     clu_lens=clu_lens.groupby("cluster", as_index=False).agg(
             n=("id", "count"),

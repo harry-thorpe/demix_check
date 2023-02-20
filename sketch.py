@@ -34,6 +34,9 @@ def run_mash_sketch(mash_exec, t, in_file, out_file, ss, m, in_type):
     elif in_type == "fq":
         mash_cmd="{} sketch -p {} -s {} -r -m {} -I {} -C - -o {} {}".format(mash_exec, t, ss, m, seq_id, out_file_p, in_file)
         std_result=subprocess.run(mash_cmd, shell=True, check=True, capture_output=True, text=True)
+    elif in_type == "list":
+        mash_cmd="{} sketch -p {} -s {} -l -o {} {}".format(mash_exec, t, ss, out_file_p, in_file)
+        std_result=subprocess.run(mash_cmd, shell=True, check=True, capture_output=True, text=True)
     
     return(std_result)
 
@@ -79,6 +82,12 @@ def add_clusters(in_clu, in_dis, out_file, ref=False, met=False):
     clu=pd.read_csv(in_clu, sep="\t", dtype={'id': 'str'})
     
     data=pd.read_csv(in_dis, sep="\t", dtype={'ref_id': 'str', 'met_id': 'str'})
+
+    data["ref_id"] = data["ref_id"].apply(os.path.basename)
+    data["ref_id"] = data["ref_id"].apply(lambda x : os.path.splitext(x)[0])
+    data["met_id"] = data["met_id"].apply(os.path.basename)
+    data["met_id"] = data["met_id"].apply(lambda x : os.path.splitext(x)[0])
+
     if ref == True:
         data=data.merge(clu, how="left", left_on="ref_id", right_on="id")
         data=data.rename(columns={"cluster":"ref_cluster"})
