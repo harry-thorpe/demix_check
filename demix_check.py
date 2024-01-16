@@ -17,8 +17,8 @@ from sketch import *
 from reference import *
 
 # dependency commands
-themisto_build_exec='build_index'
-themisto_align_exec='pseudoalign'
+themisto_build_exec='themisto build'
+themisto_align_exec='themisto pseudoalign'
 mSWEEP_exec='mSWEEP'
 mGEMS_exec='mGEMS'
 mash_exec='mash'
@@ -174,8 +174,8 @@ if mode_run:
         os.makedirs(out_d)
 
     out_f="{}/clu_out_summary.tsv".format(out_d)
-    out_data=pd.DataFrame(columns=["cluster", "abundance", "score"])
-    
+    out_data=pd.DataFrame()
+
     # loop through reference directories
     for c in range(ref_str_c):
         l=ref_str.iloc[:, c].values
@@ -234,13 +234,13 @@ if mode_run:
                 
                 out_tmp_f="{}/clu_score.tsv".format(out_dr)
                 if os.path.isfile(out_tmp_f):
-                    out_data_tmp=pd.read_csv(out_tmp_f, sep="\t")
+                    out_data_tmp=pd.read_csv(out_tmp_f, sep="\t", dtype={'cluster': 'str'})
                     out_data_tmp["ref"]=ref
                     out_data_tmp["level"]=c
                     out_data_tmp["out_d"]=out_dr
                     out_data_tmp["ref_d"]=ref_d
 
-                    out_data=out_data.append(out_data_tmp, ignore_index=True)
+                    out_data=pd.concat([out_data, out_data_tmp], sort=False, ignore_index=True)
 
     out_data.to_csv(out_f, sep="\t", index=False)
     

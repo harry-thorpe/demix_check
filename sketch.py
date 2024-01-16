@@ -76,7 +76,7 @@ def run_mash_screen(mash_exec, t, ref_file, query_file, out_file, met_id):
     return(std_result)
 
 def add_clusters(in_clu, in_dis, out_file, ref=False, met=False):
-    clu=pd.read_csv(in_clu, sep="\t", dtype={'id': 'str'})
+    clu=pd.read_csv(in_clu, sep="\t", dtype={'id': 'str', 'cluster': 'str'})
     
     data=pd.read_csv(in_dis, sep="\t", dtype={'ref_id': 'str', 'met_id': 'str'})
     if ref == True:

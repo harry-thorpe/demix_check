@@ -13,7 +13,7 @@ from sketch import *
 def check_mGEMS(mash_exec, seqtk_exec, t, ss, min_abun, ref_d, out_d, binned_reads_d, msweep_abun):
     sys.stderr.write("Checking analysis {} against reference set {}...\n".format(binned_reads_d, ref_d))
 
-    ref_idx="{}/ref_idx".format(ref_d)
+    ref_idx="{}/ref_idx/ref_idx".format(ref_d)
     ref_clu="{}/ref_clu.tsv".format(ref_d)
     ref=os.path.basename(ref_d)
     out=os.path.basename(out_d)
@@ -39,23 +39,23 @@ def check_mGEMS(mash_exec, seqtk_exec, t, ss, min_abun, ref_d, out_d, binned_rea
     all_clu_msh_out="{}/all_clu.msh".format(out_d)
     all_clu_msh_dis_out="{}/all_clu_msh_dis.tsv.gz".format(out_d)
     
-    abun_tmp=pd.read_csv(msweep_abun, sep="\t", comment="#", names=["cluster", "abundance"])
+    abun_tmp=pd.read_csv(msweep_abun, sep="\t", comment="#", names=["cluster", "abundance"], dtype={'cluster': 'str'})
     abun_tmp.to_csv(abun_out, sep="\t", index=False)
 
     abun_tmp_filt=abun_tmp.query("abundance >= {}".format(min_abun))
     abun_tmp_filt.to_csv(abun_out_filt, sep="\t", index=False)
     
-    ref_len=pd.read_csv(ref_len_in, sep="\t")
+    ref_len=pd.read_csv(ref_len_in, sep="\t", dtype={'cluster': 'str'})
     ref_len=ref_len[["cluster", "length_ave"]]
     
-    thr=pd.read_csv(ref_clu_thr, sep="\t")
+    thr=pd.read_csv(ref_clu_thr, sep="\t", dtype={'cluster': 'str'})
 
-    clu=pd.read_csv(abun_out_filt, sep="\t")
+    clu=pd.read_csv(abun_out_filt, sep="\t", dtype={'cluster': 'str'})
     clu_count=len(clu)
 
     clu_score=clu.merge(ref_len, how="left", on="cluster")
 
-    clu_score_all=pd.DataFrame(columns=["cluster", "abundance", "length_ave", "score", "read_count", "total_bases", "coverage", "subsampled", "coverage_final", "notes"])
+    clu_score_all=pd.DataFrame()
     
     sys.stderr.write("Found {} cluster/s in {}\n".format(clu_count, out_d))
     for i in range(clu_count):
@@ -130,7 +130,7 @@ def check_mGEMS(mash_exec, seqtk_exec, t, ss, min_abun, ref_d, out_d, binned_rea
             log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
             add_clusters(ref_clu, msh_dis_out, msh_dis_clu_out, ref=True, met=False)
             
-            dis=pd.read_csv(msh_dis_clu_out, sep="\t", dtype={'ref_id': 'str', 'met_id': 'str'})
+            dis=pd.read_csv(msh_dis_clu_out, sep="\t", dtype={'ref_id': 'str', 'met_id': 'str', 'ref_cluster': 'str'})
             dis=dis[(dis.ref_cluster == cluster)]
             
             sys.stderr.write("Calculating scores...\n")
@@ -160,7 +160,7 @@ def check_mGEMS(mash_exec, seqtk_exec, t, ss, min_abun, ref_d, out_d, binned_rea
             clu_score_tmp['coverage_final']=None
             clu_score_tmp['notes']="Warning: no binned reads were found - probably a bad cluster assignment."
 
-        clu_score_all=clu_score_all.append(clu_score_tmp, ignore_index=True)
+        clu_score_all=pd.concat([clu_score_all, clu_score_tmp], sort=False, ignore_index=True)
     
     clu_score_all.to_csv(clu_score_out, sep="\t", index=False)
     

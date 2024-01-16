@@ -15,7 +15,7 @@ def setup_reference(mash_exec, themisto_build_exec, seqtk_exec, d, t, ss, thr_pr
     sys.stderr.write("Setting up reference set {}...\n".format(d))
 
     seq_info_f="{}/ref_info.tsv".format(d)
-    seq_info=pd.read_csv(seq_info_f, sep="\t", dtype={'id': 'str'})
+    seq_info=pd.read_csv(seq_info_f, sep="\t", dtype={'id': 'str', 'cluster': 'str'})
     seq_count=len(seq_info)
     
     fa_out="{}/ref.fasta.gz".format(d)
@@ -76,17 +76,18 @@ def setup_reference(mash_exec, themisto_build_exec, seqtk_exec, d, t, ss, thr_pr
         sys.stderr.write("Calculating thresholds...\n")
         get_thresholds(clu_out, msh_dis_clu_out, thr_prop_min, thr_abs_min, thr_prop_exp, clu_thr_out)
     
-        idx_d="{}/ref_idx".format(d)
-        idx_d_tmp="{}/ref_idx/tmp".format(d)
+        ref_idx_d="{}/ref_idx".format(d)
+        ref_idx_d_tmp="{}/ref_idx/tmp".format(d)
+        ref_idx="{}/ref_idx/ref_idx".format(d)
 
-        if not os.path.isdir(idx_d):
-            os.makedirs(idx_d)
+        if not os.path.isdir(ref_idx_d):
+            os.makedirs(ref_idx_d)
     
-        if not os.path.isdir(idx_d_tmp):
-            os.makedirs(idx_d_tmp)
+        if not os.path.isdir(ref_idx_d_tmp):
+            os.makedirs(ref_idx_d_tmp)
         
         sys.stderr.write("Indexing reference set...\n")
-        themisto_cmd="{} --k 31 --n-threads {} --input-file {} --auto-colors --index-dir {} --temp-dir {}".format(themisto_build_exec, t, fa_out, idx_d, idx_d_tmp)
+        themisto_cmd="{} --k 31 --n-threads {} --input-file {} --auto-colors --index-prefix {} --temp-dir {}".format(themisto_build_exec, t, fa_out, ref_idx, ref_idx_d_tmp)
         std_result=subprocess.run(themisto_cmd, shell=True, check=True, capture_output=True, text=True)
         log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
         
@@ -96,10 +97,10 @@ def setup_reference(mash_exec, themisto_build_exec, seqtk_exec, d, t, ss, thr_pr
 
 def get_thresholds(in_clu, in_dis, thr_prop_min, thr_abs_min, thr_prop_exp, out_file):
     
-    clu=pd.read_csv(in_clu, sep="\t", dtype={'id': 'str'})
+    clu=pd.read_csv(in_clu, sep="\t", dtype={'id': 'str', 'cluster': 'str'})
     clu=clu.groupby("cluster", as_index=False).agg(n=("id", "count"))
 
-    dis=pd.read_csv(in_dis, sep="\t", dtype={'ref_id': 'str', 'met_id': 'str'})
+    dis=pd.read_csv(in_dis, sep="\t", dtype={'ref_id': 'str', 'met_id': 'str', 'ref_cluster': 'str', 'met_cluster': 'str'})
 
     dis_diff=dis.query("ref_cluster != met_cluster")
     dis_diff=dis_diff.query("ref_id != met_id")
@@ -139,7 +140,7 @@ def get_thresholds(in_clu, in_dis, thr_prop_min, thr_abs_min, thr_prop_exp, out_
 
 def get_comp(seqtk_exec, in_clu, in_fa, out_file, out_file_summary):
     
-    clu=pd.read_csv(in_clu, sep="\t", dtype={'id': 'str'})
+    clu=pd.read_csv(in_clu, sep="\t", dtype={'id': 'str', 'cluster': 'str'})
     
     setup_cmd="echo \"id\tlength\t#A\t#C\t#G\t#T\t#2\t#3\t#4\t#CpG\t#tv\t#ts\t#CpG-ts\" > {}".format(out_file)
     std_result=subprocess.run(setup_cmd, shell=True, check=True, capture_output=True, text=True)
