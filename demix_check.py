@@ -5,6 +5,7 @@ import io
 import sys
 import subprocess
 import argparse
+import shutil
 
 import re
 import pandas as pd
@@ -25,6 +26,21 @@ mash_exec='mash'
 seqtk_exec='seqtk'
 
 dir_path=os.path.dirname(__file__)
+
+# check dependencies
+def cmd_exists(cmd):
+    return shutil.which(cmd) is not None
+
+if not cmd_exists('themisto'):
+    sys.stderr.write("WARNING: can't find command: {}\n".format('themisto'))
+if not cmd_exists(mSWEEP_exec):
+    sys.stderr.write("WARNING: can't find command: {}\n".format(mSWEEP_exec))
+if not cmd_exists(mGEMS_exec):
+    sys.stderr.write("WARNING: can't find command: {}\n".format(mGEMS_exec))
+if not cmd_exists(mash_exec):
+    sys.stderr.write("WARNING: can't find command: {}\n".format(mash_exec))
+if not cmd_exists(seqtk_exec):
+    sys.stderr.write("WARNING: can't find command: {}\n".format(seqtk_exec))
 
 # set up args ##########################
 parser=argparse.ArgumentParser(description="Pipeline for assessing the cluster assignments from mGEMS", add_help=False)
