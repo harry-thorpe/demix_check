@@ -4,13 +4,17 @@ This pipeline assess the demixed binned reads from an mGEMS analysis to help wit
 
 ## Dependencies
 
-* python3 with numpy and pandas
-* R with tidyverse and cowplot (for plotting)
-* build_index and pseudoalign (from themisto)
-* mSWEEP
-* mGEMS
-* mash
-* seqtk
+* themisto v3.2.1
+* mSWEEP v2.0.0
+* mGEMS v1.3.1
+* python3 (tested on v3.12.1)
+    - numpy (tested on v1.26.3)
+    - pandas (tested on v2.1.4)
+* R (tested on 4.3.2)
+    - tidyverse (tested on v2.0.0)
+    - cowplot (tested on v1.1.2)
+* mash v2.3
+* seqtk v1.4
 
 ## Running the pipeline
 
