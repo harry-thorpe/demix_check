@@ -2,7 +2,7 @@
 
 This pipeline assess the demixed binned reads from an mGEMS analysis to help with interpreting the assigned clusters. This is an important step when running mGEMS on complex mixtures, when there is possible contamination, or when the species being analysed doesn't have a comprehensive reference set. In these cases the assigned clusters may be the closest available sequences from the reference set, but the reads may actually be from an unknown cluster which is not present in the reference set. To address this, demix_check calculates the genetic distances between reference isolates, and these are used to build distributions of within and between cluster distances. Genetic distances are then calculated between the demixed binned reads and the reference isolates. The query-ref distances are then compared to the ref-ref distances to determine whether the binned reads are from the assigned cluster or not. Mash is used to calculate distances as it has been shown to be very accurate and adds little computational burden to the whole pipeline.
 
-## Dependencies
+## Dependencies and Installation
 
 * themisto v3.2.1
 * mSWEEP v2.0.0
@@ -16,11 +16,24 @@ This pipeline assess the demixed binned reads from an mGEMS analysis to help wit
 * mash v2.3
 * seqtk v1.4
 
-## Running the pipeline
+All dependencies except from themisto can be installed with conda. First, create and activate a new environment:
 
-Clone the repository with:
+```
+conda create --name demix_check_env
+conda activate demix_check_env
+```
+
+Then, the dependencies can be installed using the following command (```conda-forge``` and ```bioconda``` channels required):
+
+```conda install mSWEEP=2.0.0 mGEMS=1.3.1 python=3.12.1 numpy=1.26.3 pandas=2.1.4 r-base=4.3.2 r-tidyverse=2.0.0 r-cowplot=1.1.2 mash=2.3 seqtk=1.4```
+
+For themisto, precompiled code can be downloaded from https://github.com/algbio/themisto/releases/download/v3.2.1/themisto_linux-v3.2.1.tar.gz, and then the binary can be manually added to the demix_check_env bin folder.
+
+The demix_check code can then be cloned from the GitHub repository with:
 
 ```git clone https://github.com/harry-thorpe/demix_check.git```
+
+## Running the pipeline
 
 The main script is:
 
