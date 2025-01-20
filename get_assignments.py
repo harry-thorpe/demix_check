@@ -38,12 +38,12 @@ def run_mGEMS(themisto_align_exec, mSWEEP_exec, mGEMS_exec, t, min_abun, r1, r2,
     msweep_abun_prob_c="{}/msweep_probs.csv.gz".format(out_d)
 
     sys.stderr.write("Pseudoaligning r1 reads with themisto...\n")
-    themisto_cmd="{} --index-prefix {} --query-file {} --outfile {} --rc --temp-dir {} --n-threads {} --sort-output --gzip-output".format(themisto_align_exec, ref_idx, r1, r_ali1_p, tmp_out_d, t)
+    themisto_cmd="{} --index-prefix {} --query-file {} --outfile {} --rc --temp-dir {} --n-threads {} --sort-output-lines --gzip-output".format(themisto_align_exec, ref_idx, r1, r_ali1_p, tmp_out_d, t)
     std_result=subprocess.run(themisto_cmd, shell=True, check=True, capture_output=True, text=True)
     log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
     
     sys.stderr.write("Pseudoaligning r2 reads with themisto...\n")
-    themisto_cmd="{} --index-prefix {} --query-file {} --outfile {} --rc --temp-dir {} --n-threads {} --sort-output --gzip-output".format(themisto_align_exec, ref_idx, r2, r_ali2_p, tmp_out_d, t)
+    themisto_cmd="{} --index-prefix {} --query-file {} --outfile {} --rc --temp-dir {} --n-threads {} --sort-output-lines --gzip-output".format(themisto_align_exec, ref_idx, r2, r_ali2_p, tmp_out_d, t)
     std_result=subprocess.run(themisto_cmd, shell=True, check=True, capture_output=True, text=True)
     log.write("{}\n\n{}\n{}\n\n".format(std_result.args, std_result.stderr, std_result.stdout))
     

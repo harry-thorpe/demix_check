@@ -205,6 +205,13 @@ if mode_run:
                 rr1=r1
                 rr2=r2
                 ref_p="input_reads"
+
+                if not os.path.isfile(rr1):
+                    sys.stderr.write("ERROR: can't find read file {}\n".format(rr1))
+                    sys.exit(1)
+                if not os.path.isfile(rr2):
+                    sys.stderr.write("ERROR: can't find read file {}\n".format(rr2))
+                    sys.exit(1)
             else:
                 ref_d_p=ref_str_d[ref_d]
                 ref_p=os.path.basename(ref_d_p)
